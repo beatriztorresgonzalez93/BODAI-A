@@ -1,37 +1,58 @@
-# Web de Boda (Next.js + TypeScript + MongoDB)
+# Boda web (`boda-web`)
 
-Proyecto de ejemplo para una web de boda con los apartados:
+Sitio de boda con **Next.js** (App Router), **React**, **TypeScript**, **Tailwind CSS** y datos en **MongoDB Atlas**. Las fotos de invitados pueden guardarse en **Cloudinary** para no llenar la base de datos.
 
-- Nuestra historia
-- El gran dia
-- Confirma tu asistencia
-- Para los viajeros
-- Pon musica
-- Sube tus fotos
+## Contenido del sitio (pestañas)
 
-Incluye backend/API dentro de Next.js y guardado en MongoDB Atlas.
+| Sección | Descripción |
+|--------|-------------|
+| **Inicio** | Cabecera, fecha y cuenta atrás |
+| **Historia** | Textos configurables |
+| **Gran día** | Fecha, ceremonia, ubicación (con enlace a Google Maps), dress code e itinerario |
+| **RSVP** | Confirmación con número de asistentes, acompañantes (nombre, niño/a, menú infantil), alergias y autobús |
+| **Viajeros** | Bloque de hotel recomendado (imagen, dirección, teléfono, web, mapa) |
+| **Música** | Formulario para sugerir una canción (una por persona); lista pública solo con título/artista/Spotify, sin mostrar quién la propuso |
+| **Fotos** | Subida de imágenes (comprimidas en cliente) y galería |
+| **Área novios** | Panel privado: RSVPs, canciones (con nombre del invitado), fotos con descarga individual o ZIP |
 
-## 1) Requisitos
+Los textos del evento (nombres, fechas, hotel, direcciones, etc.) se centralizan en `src/lib/wedding-config.ts`.
 
-- Node.js 20+
-- Cuenta en MongoDB Atlas
-- Cuenta en Vercel (para deploy)
+## Requisitos
 
-## 2) Configuracion local
+- **Node.js** 20 o superior
+- Cuenta **MongoDB Atlas**
+- (Opcional) **Cloudinary** para almacenar fotos fuera de Mongo
+- (Opcional) **Vercel** u otro hosting compatible con Next.js
 
-1. Instala dependencias:
+## Configuración local
+
+1. Instalar dependencias:
+
    ```bash
    npm install
    ```
-2. Crea `.env.local` a partir de `.env.example`.
-3. Completa variables:
-   - `MONGODB_URI`
-   - `MONGODB_DB_NAME`
-   - `ADMIN_USER`
-   - `ADMIN_PASSWORD` (o `ADMIN_PASSWORD_HASH`)
-   - `ADMIN_SESSION_SECRET`
 
-## 3) Ejecutar en local
+2. Copiar variables de entorno:
+
+   ```bash
+   copy .env.example .env
+   ```
+
+   En macOS/Linux: `cp .env.example .env`
+
+3. Completar al menos:
+
+   | Variable | Uso |
+   |----------|-----|
+   | `MONGODB_URI` | Cadena de conexión Atlas |
+   | `MONGODB_DB_NAME` | Nombre de la base de datos |
+   | `ADMIN_USER` | Usuario del panel novios |
+   | `ADMIN_PASSWORD` o `ADMIN_PASSWORD_HASH` | Acceso al panel |
+   | `ADMIN_SESSION_SECRET` | Secreto para firmar la cookie de sesión |
+
+4. **Fotos con Cloudinary** (recomendado si Atlas tiene poco espacio): define las tres variables `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y `CLOUDINARY_API_SECRET`. Opcional: `CLOUDINARY_FOLDER` (por defecto `boda-fotos`). No hace falta crear un *upload preset*; la subida es por API desde el servidor. Sin estas variables, las fotos se guardan en Mongo como imagen en base64 (ocupa mucho más).
+
+## Ejecutar en local
 
 ```bash
 npm run dev
@@ -39,61 +60,44 @@ npm run dev
 
 Abrir [http://localhost:3000](http://localhost:3000).
 
-## 4) Endpoints API incluidos
+Otros scripts: `npm run build`, `npm run start`, `npm run lint`.
 
-- `POST /api/rsvp`
-  - Body: `{ name, guestCount, companions, allergies, needsBus }` (`companions`: `[{ name, isChild, kidsMenu }]` por cada acompañante si hay más de 1 persona)
-  - Coleccion: `rsvps`
-- `GET /api/songs`
-  - Devuelve canciones para lista publica
-- `POST /api/songs`
-  - Body: `{ guestName, songTitleArtist, spotifyUrl }`
-  - Coleccion: `songs`
-  - Regla: una cancion por persona (indice unico en `guestName`)
-- `GET /api/photos`
-  - Devuelve fotos para galeria publica
-- `POST /api/photos`
-  - Body: `{ guestName, photoDataUrl }` o `{ guestName, photoUrl }`
-  - Coleccion: `photos`
-- `POST /api/admin/login`
-  - Body: `{ username, password }`
-- `POST /api/admin/logout`
-- `GET /api/admin/session`
-- `GET /api/admin/overview`
-  - Requiere sesion admin
-- `GET /api/admin/photos/:id/download`
-  - Requiere sesion admin
-- `GET /api/admin/photos/download-zip`
-  - Requiere sesion admin
-  - Descarga todas las fotos en un ZIP
+## API (rutas principales)
 
-## 5) Deploy en Vercel
+| Método | Ruta | Notas |
+|--------|------|--------|
+| `POST` | `/api/rsvp` | Body: `name`, `guestCount`, `companions[]`, `allergies`, `needsBus`. Colección `rsvps`. |
+| `GET` / `POST` | `/api/songs` | POST: `guestName`, `songTitleArtist`, `spotifyUrl`. Una canción por `guestName` (índice único). Colección `songs`. |
+| `GET` / `POST` | `/api/photos` | POST: `guestName` + `photoDataUrl` y/o URL externa. Con Cloudinary activo, respuesta incluye `storage: "cloudinary"` \| `"database"`. Colección `photos`. |
+| `POST` | `/api/admin/login` | Body: `username`, `password`. |
+| `POST` | `/api/admin/logout` | |
+| `GET` | `/api/admin/session` | |
+| `GET` | `/api/admin/overview` | RSVPs, canciones y metadatos de fotos (requiere sesión). |
+| `GET` | `/api/admin/photos/[id]/download` | Descarga de una foto (requiere sesión). |
+| `GET` | `/api/admin/photos/download-zip` | ZIP con las fotos (requiere sesión). |
 
-1. Sube el repo a GitHub.
-2. Importa el proyecto en Vercel.
-3. En Vercel, configura variables de entorno:
-   - `MONGODB_URI`
-   - `MONGODB_DB_NAME`
-   - `ADMIN_USER`
-   - `ADMIN_PASSWORD` o `ADMIN_PASSWORD_HASH`
-   - `ADMIN_SESSION_SECRET`
-4. Deploy.
+## Despliegue (p. ej. Vercel)
 
-## Password hash recomendado
+1. Repositorio en GitHub y proyecto importado en Vercel.
+2. Mismas variables de entorno que en local (`MONGODB_*`, `ADMIN_*`, `ADMIN_SESSION_SECRET` y, si aplica, Cloudinary).
+3. No subas `.env` al repositorio; usa los secretos del panel del hosting.
 
-Si no quieres guardar la password admin en texto plano, puedes generar hash scrypt:
+## Contraseña del panel en hash (opcional)
+
+Para no guardar la contraseña en texto plano:
 
 ```bash
 node -e "const { randomBytes, scryptSync } = require('crypto'); const p='TU_PASSWORD'; const s=randomBytes(16).toString('hex'); const h=scryptSync(p,s,64).toString('hex'); console.log(`scrypt$${s}$${h}`);"
 ```
 
-Luego guarda ese valor en `ADMIN_PASSWORD_HASH`.
+Guarda el resultado en `ADMIN_PASSWORD_HASH` (y no uses `ADMIN_PASSWORD` a la vez).
 
-## Nota importante sobre Windows y esta ruta
+## Windows y rutas con `&`
 
-Si el path contiene `&` (como `BODAI&A`), algunos scripts de npm pueden fallar.
-Si ocurre, ejecuta en la terminal:
+Si la carpeta del proyecto incluye `&` (por ejemplo `BODAI&A`), algunos scripts de npm pueden fallar. En PowerShell:
 
 ```powershell
 $env:npm_config_script_shell='powershell.exe'
 ```
+
+Ejecuta `npm install` y `npm run dev` desde la carpeta del proyecto (`boda-web`).
