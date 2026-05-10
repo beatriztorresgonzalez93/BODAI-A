@@ -1,6 +1,6 @@
 /** Personaliza aquí los datos del evento (mockups de referencia). */
 export const weddingConfig = {
-  coupleLine: "Inmacula & Alejandro",
+  coupleLine: "Inmaculada & Alejandro",
   headline: "NOS CASAMOS",
   dateLine: "SÁBADO · 5 DE DICIEMBRE DE 2026 · SEVILLA",
   /** Hora de referencia para la cuenta atrás (CET); cambia si ya tienes horario cerrado */
@@ -39,7 +39,7 @@ export const weddingConfig = {
       phone: "+34 955 793 127",
       rateNote: 'Menciona "Boda Inmacula y Alejandro"',
       distance:
-        "San José de la Rinconada · unos 10 min en coche hasta Sevilla capital (según el hotel)",
+        "Dos minutos a pie del lugar de la celebración",
       mapsQuery:
         "Hotel Torre del Oro, C. el Malecón 100, San José de la Rinconada, Sevilla",
     },

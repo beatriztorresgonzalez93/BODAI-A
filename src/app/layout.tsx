@@ -13,7 +13,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Inmacula y Alejandro · Boda",
+  title: "Inmaculada y Alejandro · Boda",
   description:
     "Boda en Sevilla, 5 de diciembre de 2026: información, RSVP, música y fotos.",
 };
