@@ -383,8 +383,8 @@ export function WeddingSite() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F2E8DF] pb-16 font-sans text-[#332C28]">
-      <nav className="sticky top-0 z-20 border-b border-[#332C28]/10 bg-[#F2E8DF]/95 backdrop-blur-sm">
+    <div className="min-h-screen bg-[#F2F5F0] pb-16 font-sans text-[#2F3530]">
+      <nav className="sticky top-0 z-20 border-b border-[#2F3530]/10 bg-[#F2F5F0]/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-3xl items-center gap-1 overflow-x-auto px-3 py-3 [-ms-overflow-style:none] [scrollbar-width:none] sm:justify-center sm:px-4 [&::-webkit-scrollbar]:hidden">
           {tabs.map((t) => (
             <button
@@ -398,8 +398,8 @@ export function WeddingSite() {
               }}
               className={`shrink-0 rounded-full px-3 py-1.5 font-sans text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors sm:text-xs ${
                 tab === t.id
-                  ? "bg-[#332C28] text-[#FDFBF9]"
-                  : "text-[#332C28]/70 hover:bg-[#332C28]/10"
+                  ? "bg-[#2F3530] text-[#FAFCF9]"
+                  : "text-[#2F3530]/70 hover:bg-[#2F3530]/10"
               }`}
             >
               {t.label}
@@ -413,18 +413,28 @@ export function WeddingSite() {
       >
         {tab === "home" ? (
           <section className="flex flex-col items-center pb-12 text-center">
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#C19A6B]">
+            <div className="relative mx-auto mb-8 size-48 overflow-hidden rounded-full sm:size-56">
+              <Image
+                src="/logo.png"
+                alt="Logo Inmaculada & Alejandro"
+                fill
+                className="object-cover"
+                sizes="350px"
+                priority
+              />
+            </div>
+            <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8A9B82]">
               {weddingConfig.headline}
             </p>
-            <h1 className="mt-5 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 font-serif text-4xl font-normal tracking-tight text-[#332C28] sm:text-5xl">
+            <h1 className="mt-5 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 font-serif text-4xl font-normal tracking-tight text-[#2F3530] sm:text-5xl">
               <span>{nameLeft}</span>
-              <span className="font-serif text-3xl text-[#C19A6B] sm:text-4xl">
+              <span className="font-serif text-3xl text-[#8A9B82] sm:text-4xl">
                 &
               </span>
               <span>{nameRight}</span>
             </h1>
-            <div className="mx-auto mt-6 h-px w-14 bg-[#C19A6B]" aria-hidden />
-            <p className="mt-6 font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-[#332C28]/85">
+            <div className="mx-auto mt-6 h-px w-14 bg-[#8A9B82]" aria-hidden />
+            <p className="mt-6 font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-[#2F3530]/85">
               {weddingConfig.dateLine}
             </p>
 
@@ -439,12 +449,12 @@ export function WeddingSite() {
               ).map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-lg bg-[#FDFBF9] px-3 py-5 shadow-sm shadow-[#332C28]/5"
+                  className="rounded-lg bg-[#FAFCF9] px-3 py-5 shadow-sm shadow-[#2F3530]/5"
                 >
-                  <p className="font-serif text-3xl font-normal tabular-nums text-[#332C28] sm:text-4xl">
+                  <p className="font-serif text-3xl font-normal tabular-nums text-[#2F3530] sm:text-4xl">
                     {value}
                   </p>
-                  <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.25em] text-[#C19A6B]">
+                  <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8A9B82]">
                     {label}
                   </p>
                 </div>
@@ -456,7 +466,7 @@ export function WeddingSite() {
         {tab === "story" ? (
           <section className="pb-16">
             <SectionHeading title="Nuestra historia" />
-            <div className="mx-auto max-w-lg space-y-5 text-center font-sans text-sm leading-relaxed text-[#332C28]/80">
+            <div className="mx-auto max-w-lg space-y-5 text-center font-sans text-sm leading-relaxed text-[#2F3530]/80">
               {weddingConfig.historia.paragraphs.map((p) => (
                 <p key={p}>{p}</p>
               ))}
@@ -471,22 +481,22 @@ export function WeddingSite() {
               {(
                 [
                   {
-                    icon: <Calendar className="size-6 text-[#C19A6B]" strokeWidth={1.25} />,
+                    icon: <Calendar className="size-6 text-[#8A9B82]" strokeWidth={1.25} />,
                     label: "FECHA",
                     value: weddingConfig.granDia.fecha,
                   },
                   {
-                    icon: <Clock className="size-6 text-[#C19A6B]" strokeWidth={1.25} />,
+                    icon: <Clock className="size-6 text-[#8A9B82]" strokeWidth={1.25} />,
                     label: "CEREMONIA",
                     value: weddingConfig.granDia.ceremonia,
                   },
                   {
-                    icon: <MapPin className="size-6 text-[#C19A6B]" strokeWidth={1.25} />,
+                    icon: <MapPin className="size-6 text-[#8A9B82]" strokeWidth={1.25} />,
                     label: "LUGAR",
                     value: weddingConfig.granDia.lugarLines,
                   },
                   {
-                    icon: <Shirt className="size-6 text-[#C19A6B]" strokeWidth={1.25} />,
+                    icon: <Shirt className="size-6 text-[#8A9B82]" strokeWidth={1.25} />,
                     label: "DRESS CODE",
                     value: weddingConfig.granDia.dressCode,
                   },
@@ -494,14 +504,14 @@ export function WeddingSite() {
               ).map((card) => (
                 <div
                   key={card.label}
-                  className="flex gap-4 rounded-xl bg-white p-5 shadow-sm shadow-[#332C28]/5"
+                  className="flex gap-4 rounded-xl bg-white p-5 shadow-sm shadow-[#2F3530]/5"
                 >
                   <div className="shrink-0 pt-0.5">{card.icon}</div>
                   <div>
-                    <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                    <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                       {card.label}
                     </p>
-                    <div className="mt-2 font-serif text-lg text-[#332C28]">
+                    <div className="mt-2 font-serif text-lg text-[#2F3530]">
                       {Array.isArray(card.value) ? (
                         card.value.map((line, i) => (
                           <p key={`${i}-${line}`} className={i > 0 ? "mt-1" : undefined}>
@@ -521,15 +531,15 @@ export function WeddingSite() {
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(weddingConfig.granDia.lugarMapsQuery)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 flex flex-col items-center justify-center rounded-xl bg-[#ebe3d7] px-6 py-14 text-center transition-colors hover:bg-[#e4dacb]"
+              className="mt-6 flex flex-col items-center justify-center rounded-xl bg-[#E3EAE0] px-6 py-14 text-center transition-colors hover:bg-[#D5DDD1]"
             >
-              <MapIcon className="mb-3 size-8 text-[#C19A6B]" strokeWidth={1.25} />
-              <span className="font-sans text-sm leading-snug text-[#332C28]/85">
-                <span className="block font-semibold tracking-wide text-[#332C28]">
+              <MapIcon className="mb-3 size-8 text-[#8A9B82]" strokeWidth={1.25} />
+              <span className="font-sans text-sm leading-snug text-[#2F3530]/85">
+                <span className="block font-semibold tracking-wide text-[#2F3530]">
                   Abrir en Google Maps
                 </span>
                 {weddingConfig.granDia.lugarLines.map((line, i) => (
-                  <span key={`${i}-${line}`} className="mt-2 block text-[#332C28]/75">
+                  <span key={`${i}-${line}`} className="mt-2 block text-[#2F3530]/75">
                     {line}
                   </span>
                 ))}
@@ -537,19 +547,19 @@ export function WeddingSite() {
             </a>
 
             <div className="mt-12">
-              <p className="text-center font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#332C28]/45">
+              <p className="text-center font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#2F3530]/45">
                 Horario del día
               </p>
-              <ul className="mt-6 divide-y divide-[#332C28]/10 rounded-xl bg-white shadow-sm shadow-[#332C28]/5">
+              <ul className="mt-6 divide-y divide-[#2F3530]/10 rounded-xl bg-white shadow-sm shadow-[#2F3530]/5">
                 {weddingConfig.granDia.schedule.map((row) => (
                   <li
                     key={row.time + row.label}
                     className="flex gap-4 px-5 py-4 text-sm sm:gap-8"
                   >
-                    <span className="w-14 shrink-0 font-sans text-[#C19A6B] tabular-nums">
+                    <span className="w-14 shrink-0 font-sans text-[#8A9B82] tabular-nums">
                       {row.time}
                     </span>
-                    <span className="font-medium text-[#332C28]">{row.label}</span>
+                    <span className="font-medium text-[#2F3530]">{row.label}</span>
                   </li>
                 ))}
               </ul>
@@ -560,7 +570,7 @@ export function WeddingSite() {
         {tab === "rsvp" ? (
           <section className="pb-16">
             <SectionHeading title="Confirma tu asistencia" />
-            <p className="-mt-4 mb-8 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C19A6B]">
+            <p className="-mt-4 mb-8 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8A9B82]">
               {weddingConfig.rsvpDeadlineLine}
             </p>
             <form
@@ -568,18 +578,18 @@ export function WeddingSite() {
               onSubmit={onRsvpSubmit}
             >
               <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Tu nombre completo
                 </label>
                 <input
                   name="name"
                   required
                   placeholder="Elena García López"
-                  className="mt-2 w-full rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm text-[#332C28] outline-none ring-[#C19A6B]/40 placeholder:text-[#332C28]/35 focus:ring-2"
+                  className="mt-2 w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                 />
               </div>
               <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Número de asistentes
                 </label>
                 <div className="relative mt-2">
@@ -589,7 +599,7 @@ export function WeddingSite() {
                     onChange={(ev) =>
                       setRsvpGuestCount(Number(ev.target.value) || 1)
                     }
-                    className="w-full appearance-none rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm text-[#332C28] outline-none ring-[#C19A6B]/40 focus:ring-2"
+                    className="w-full appearance-none rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 focus:ring-2"
                   >
                     {Array.from({ length: 8 }, (_, i) => i + 1).map((n) => (
                       <option key={n} value={String(n)}>
@@ -597,44 +607,44 @@ export function WeddingSite() {
                       </option>
                     ))}
                   </select>
-                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#332C28]/40">
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#2F3530]/40">
                     ▾
                   </span>
                 </div>
               </div>
               {rsvpGuestCount > 1 ? (
-                <div className="space-y-4 rounded-xl border border-[#332C28]/10 bg-[#fdfbf9]/80 p-4">
-                  <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <div className="space-y-4 rounded-xl border border-[#2F3530]/10 bg-[#f5f8f3]/80 p-4">
+                  <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                     Nombres de los acompañantes
                   </p>
-                  <p className="font-sans text-xs text-[#332C28]/60">
+                  <p className="font-sans text-xs text-[#2F3530]/60">
                     El primer asistente es quien rellena el formulario arriba. Indica el nombre completo de cada persona más.
                   </p>
                   {Array.from({ length: rsvpGuestCount - 1 }, (_, i) => (
-                    <div key={i} className="space-y-3 rounded-lg border border-[#332C28]/8 bg-white/60 p-3">
-                      <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                    <div key={i} className="space-y-3 rounded-lg border border-[#2F3530]/8 bg-white/60 p-3">
+                      <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                         Acompañante {i + 2}
                       </label>
                       <input
                         name={`companion_${i}_name`}
                         required
                         placeholder="Nombre y apellidos"
-                        className="w-full rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm text-[#332C28] outline-none ring-[#C19A6B]/40 placeholder:text-[#332C28]/35 focus:ring-2"
+                        className="w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                       />
                       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
-                        <label className="flex cursor-pointer items-center gap-2 font-sans text-sm text-[#332C28]">
+                        <label className="flex cursor-pointer items-center gap-2 font-sans text-sm text-[#2F3530]">
                           <input
                             type="checkbox"
                             name={`companion_${i}_isChild`}
-                            className="size-4 shrink-0 accent-[#C19A6B]"
+                            className="size-4 shrink-0 accent-[#8A9B82]"
                           />
                           Es niño/a
                         </label>
-                        <label className="flex cursor-pointer items-center gap-2 font-sans text-sm text-[#332C28]">
+                        <label className="flex cursor-pointer items-center gap-2 font-sans text-sm text-[#2F3530]">
                           <input
                             type="checkbox"
                             name={`companion_${i}_kidsMenu`}
-                            className="size-4 shrink-0 accent-[#C19A6B]"
+                            className="size-4 shrink-0 accent-[#8A9B82]"
                           />
                           Menú infantil
                         </label>
@@ -644,37 +654,37 @@ export function WeddingSite() {
                 </div>
               ) : null}
               <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Alergias o intolerancias alimentarias
                 </label>
                 <textarea
                   name="allergies"
                   rows={4}
                   placeholder="Sin gluten, vegetariano, alergia al marisco..."
-                  className="mt-2 w-full resize-y rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm text-[#332C28] outline-none ring-[#C19A6B]/40 placeholder:text-[#332C28]/35 focus:ring-2"
+                  className="mt-2 w-full resize-y rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                 />
               </div>
               <div>
-                <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   ¿Usarás el autobús de cortesía?
                 </p>
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#C19A6B] bg-[#fdf8f3] px-4 py-3 has-[:checked]:ring-2 has-[:checked]:ring-[#C19A6B]/50">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#8A9B82] bg-[#F0F4EE] px-4 py-3 has-[:checked]:ring-2 has-[:checked]:ring-[#8A9B82]/50">
                     <input
                       type="radio"
                       name="needsBus"
                       value="yes"
                       defaultChecked
-                      className="size-4 accent-[#C19A6B]"
+                      className="size-4 accent-[#8A9B82]"
                     />
                     <span className="text-sm">Sí, gracias</span>
                   </label>
-                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 has-[:checked]:ring-2 has-[:checked]:ring-[#C19A6B]/50">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 has-[:checked]:ring-2 has-[:checked]:ring-[#8A9B82]/50">
                     <input
                       type="radio"
                       name="needsBus"
                       value="no"
-                      className="size-4 accent-[#C19A6B]"
+                      className="size-4 accent-[#8A9B82]"
                     />
                     <span className="text-sm">No, tengo transporte</span>
                   </label>
@@ -682,7 +692,7 @@ export function WeddingSite() {
               </div>
               <button
                 type="submit"
-                className="w-full rounded-lg border border-[#332C28]/25 bg-white py-4 font-serif text-sm font-semibold uppercase tracking-[0.15em] text-[#332C28] transition-colors hover:bg-[#FDFBF9]"
+                className="w-full rounded-lg border border-[#2F3530]/25 bg-white py-4 font-serif text-sm font-semibold uppercase tracking-[0.15em] text-[#2F3530] transition-colors hover:bg-[#FAFCF9]"
               >
                 Confirmar asistencia
               </button>
@@ -708,8 +718,8 @@ export function WeddingSite() {
               subtitle={weddingConfig.viajeros.subtitle}
             />
 
-            <article className="overflow-hidden rounded-2xl bg-white shadow-md shadow-[#332C28]/10">
-              <div className="relative aspect-[21/9] bg-[#e8dfd4]">
+            <article className="overflow-hidden rounded-2xl bg-white shadow-md shadow-[#2F3530]/10">
+              <div className="relative aspect-[21/9] bg-[#DDE5DA]">
                 {weddingConfig.viajeros.hotel.imageSrc ? (
                   <Image
                     src={weddingConfig.viajeros.hotel.imageSrc}
@@ -721,8 +731,8 @@ export function WeddingSite() {
                 ) : (
                   <div className="flex size-full items-center justify-center">
                     <div className="text-center">
-                      <Camera className="mx-auto size-8 text-[#FDFBF9]" strokeWidth={1.25} />
-                      <p className="mt-2 font-serif text-lg italic text-[#FDFBF9]/95">
+                      <Camera className="mx-auto size-8 text-[#FAFCF9]" strokeWidth={1.25} />
+                      <p className="mt-2 font-serif text-lg italic text-[#FAFCF9]/95">
                         foto del hotel
                       </p>
                     </div>
@@ -731,33 +741,33 @@ export function WeddingSite() {
               </div>
               <div className="space-y-4 px-6 py-7">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-serif text-2xl text-[#332C28]">
+                  <h3 className="font-serif text-2xl text-[#2F3530]">
                     {weddingConfig.viajeros.hotel.name}
                   </h3>
                   <a
                     href={weddingConfig.viajeros.hotel.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-sans text-[11px] font-semibold uppercase tracking-[0.15em] text-[#C19A6B] underline-offset-4 hover:underline"
+                    className="font-sans text-[11px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82] underline-offset-4 hover:underline"
                   >
                     Web del hotel
                   </a>
                 </div>
-                <dl className="space-y-2 font-sans text-sm text-[#332C28]/85">
+                <dl className="space-y-2 font-sans text-sm text-[#2F3530]/85">
                   <div>
-                    <dt className="font-semibold text-[#332C28]">Dirección</dt>
+                    <dt className="font-semibold text-[#2F3530]">Dirección</dt>
                     <dd>{weddingConfig.viajeros.hotel.address}</dd>
                   </div>
                   <div>
-                    <dt className="font-semibold text-[#332C28]">Teléfono</dt>
+                    <dt className="font-semibold text-[#2F3530]">Teléfono</dt>
                     <dd>{weddingConfig.viajeros.hotel.phone}</dd>
                   </div>
                   <div>
-                    <dt className="font-semibold text-[#332C28]">Tarifa especial</dt>
+                    <dt className="font-semibold text-[#2F3530]">Tarifa especial</dt>
                     <dd>{weddingConfig.viajeros.hotel.rateNote}</dd>
                   </div>
                   <div>
-                    <dt className="font-semibold text-[#332C28]">Distancia</dt>
+                    <dt className="font-semibold text-[#2F3530]">Distancia</dt>
                     <dd>{weddingConfig.viajeros.hotel.distance}</dd>
                   </div>
                 </dl>
@@ -768,10 +778,10 @@ export function WeddingSite() {
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(weddingConfig.viajeros.hotel.mapsQuery)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 flex flex-col items-center justify-center rounded-xl bg-[#ebe3d7] px-6 py-12 text-center transition-colors hover:bg-[#e4dacb]"
+              className="mt-6 flex flex-col items-center justify-center rounded-xl bg-[#E3EAE0] px-6 py-12 text-center transition-colors hover:bg-[#D5DDD1]"
             >
-              <MapPin className="mb-2 size-8 text-[#C19A6B]" strokeWidth={1.25} />
-              <span className="font-sans text-sm text-[#332C28]/75">
+              <MapPin className="mb-2 size-8 text-[#8A9B82]" strokeWidth={1.25} />
+              <span className="font-sans text-sm text-[#2F3530]/75">
                 Google Maps · {weddingConfig.viajeros.hotel.name}
               </span>
             </a>
@@ -781,7 +791,7 @@ export function WeddingSite() {
         {tab === "music" ? (
           <section className="pb-16">
             <SectionHeading title="Pon música" />
-            <p className="-mt-4 mx-auto max-w-md text-center font-serif text-base italic leading-relaxed text-[#332C28]/75">
+            <p className="-mt-4 mx-auto max-w-md text-center font-serif text-base italic leading-relaxed text-[#2F3530]/75">
               Ayúdanos a crear la playlist perfecta. Cada uno puede sugerir una
               sola canción.
             </p>
@@ -791,41 +801,41 @@ export function WeddingSite() {
               onSubmit={onSongSubmit}
             >
               <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Tu nombre
                 </label>
                 <input
                   name="guestName"
                   required
                   placeholder="Tu nombre"
-                  className="mt-2 w-full rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#C19A6B]/40 placeholder:text-[#332C28]/35 focus:ring-2"
+                  className="mt-2 w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                 />
               </div>
               <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Nombre de la canción y artista
                 </label>
                 <input
                   name="songTitleArtist"
                   required
                   placeholder="Ej: La Bamba — Ritchie Valens"
-                  className="mt-2 w-full rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#C19A6B]/40 placeholder:text-[#332C28]/35 focus:ring-2"
+                  className="mt-2 w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                 />
               </div>
               <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Enlace de Spotify (opcional)
                 </label>
                 <input
                   name="spotifyUrl"
                   type="url"
                   placeholder="https://open.spotify.com/..."
-                  className="mt-2 w-full rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#C19A6B]/40 placeholder:text-[#332C28]/35 focus:ring-2"
+                  className="mt-2 w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full rounded-lg border border-[#332C28]/25 bg-[#FDFBF9] py-4 font-sans text-xs font-semibold uppercase tracking-[0.25em] text-[#332C28] transition-colors hover:bg-white"
+                className="w-full rounded-lg border border-[#2F3530]/25 bg-[#FAFCF9] py-4 font-sans text-xs font-semibold uppercase tracking-[0.25em] text-[#2F3530] transition-colors hover:bg-white"
               >
                 Añadir canción
               </button>
@@ -843,12 +853,12 @@ export function WeddingSite() {
             </form>
 
             <div className="mx-auto mt-14 max-w-md">
-              <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#C19A6B]">
+              <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8A9B82]">
                 Lista de deseos
               </p>
-              <ul className="mt-4 divide-y divide-[#332C28]/10">
+              <ul className="mt-4 divide-y divide-[#2F3530]/10">
                 {songs.length === 0 ? (
-                  <li className="py-6 text-center font-sans text-sm text-[#332C28]/45">
+                  <li className="py-6 text-center font-sans text-sm text-[#2F3530]/45">
                     Aún no hay canciones. ¡Sé el primero en sugerir una!
                   </li>
                 ) : (
@@ -859,15 +869,15 @@ export function WeddingSite() {
                       "—";
                     return (
                     <li key={s.id} className="flex gap-3 py-5">
-                      <span className="shrink-0 pt-0.5 font-serif text-lg text-[#C19A6B] tabular-nums">
+                      <span className="shrink-0 pt-0.5 font-serif text-lg text-[#8A9B82] tabular-nums">
                         {idx + 1}.
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="font-serif text-lg font-medium leading-snug text-[#332C28]">
+                        <p className="font-serif text-lg font-medium leading-snug text-[#2F3530]">
                           {titleLine}
                         </p>
                         {s.artist.trim() ? (
-                          <p className="mt-1 font-sans text-sm text-[#332C28]/65">
+                          <p className="mt-1 font-sans text-sm text-[#2F3530]/65">
                             {s.artist}
                           </p>
                         ) : null}
@@ -897,20 +907,20 @@ export function WeddingSite() {
         {tab === "photos" ? (
           <section className="pb-16">
             <SectionHeading title="Sube tus fotos" />
-            <p className="-mt-4 mb-8 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-[#332C28]/55">
+            <p className="-mt-4 mb-8 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-[#2F3530]/55">
               COMPARTE TUS MOMENTOS FAVORITOS DEL DÍA
             </p>
 
             <div className="mx-auto max-w-xl space-y-4">
               <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Tu nombre (para los álbumes)
                 </label>
                 <input
                   value={photoGuestName}
                   onChange={(e) => setPhotoGuestName(e.target.value)}
                   placeholder="María"
-                  className="mt-2 w-full rounded-lg border border-[#332C28]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#C19A6B]/40 placeholder:text-[#332C28]/35 focus:ring-2"
+                  className="mt-2 w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                 />
               </div>
 
@@ -942,21 +952,21 @@ export function WeddingSite() {
                 onClick={() => fileInputRef.current?.click()}
                 className={`flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-14 transition-colors ${
                   dragActive
-                    ? "border-[#C19A6B] bg-[#fdf8f3]"
-                    : "border-[#C19A6B]/55 bg-transparent"
+                    ? "border-[#8A9B82] bg-[#F0F4EE]"
+                    : "border-[#8A9B82]/55 bg-transparent"
                 }`}
               >
                 <div className="relative">
-                  <Camera className="size-10 text-[#C19A6B]" strokeWidth={1.25} />
-                  <Upload className="absolute -right-1 -top-1 size-4 text-[#C19A6B]" />
+                  <Camera className="size-10 text-[#8A9B82]" strokeWidth={1.25} />
+                  <Upload className="absolute -right-1 -top-1 size-4 text-[#8A9B82]" />
                 </div>
-                <p className="mt-4 font-sans text-sm font-semibold text-[#332C28]">
+                <p className="mt-4 font-sans text-sm font-semibold text-[#2F3530]">
                   Haz clic para subir fotos
                 </p>
-                <p className="mt-1 font-sans text-sm text-[#332C28]/60">
+                <p className="mt-1 font-sans text-sm text-[#2F3530]/60">
                   o arrastra y suelta aquí
                 </p>
-                <p className="mt-3 font-sans text-xs text-[#332C28]/45">
+                <p className="mt-3 font-sans text-xs text-[#2F3530]/45">
                   JPG, PNG · Máximo 10 MB por foto
                 </p>
               </button>
@@ -975,14 +985,14 @@ export function WeddingSite() {
             </div>
 
             <div className="mx-auto mt-14 max-w-xl">
-              <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#332C28]/45">
+              <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#2F3530]/45">
                 Galería del día
               </p>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {photos.map((ph) => (
                   <div
                     key={ph.id}
-                    className="relative aspect-square overflow-hidden rounded-xl bg-[#ebe3d7]"
+                    className="relative aspect-square overflow-hidden rounded-xl bg-[#E3EAE0]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element -- data URLs y URLs externas dinámicas */}
                     <img
@@ -996,10 +1006,10 @@ export function WeddingSite() {
                   ? Array.from({ length: 5 - photos.length }).map((_, i) => (
                       <div
                         key={`placeholder-${i}`}
-                        className="flex aspect-square flex-col items-center justify-center rounded-xl bg-[#ebe3d7]"
+                        className="flex aspect-square flex-col items-center justify-center rounded-xl bg-[#E3EAE0]"
                       >
-                        <ImageIcon className="size-8 text-[#332C28]/25" strokeWidth={1} />
-                        <span className="mt-2 font-sans text-[10px] uppercase tracking-wider text-[#332C28]/30">
+                        <ImageIcon className="size-8 text-[#2F3530]/25" strokeWidth={1} />
+                        <span className="mt-2 font-sans text-[10px] uppercase tracking-wider text-[#2F3530]/30">
                           IMG
                         </span>
                       </div>
@@ -1008,13 +1018,13 @@ export function WeddingSite() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-[#C19A6B]/5 bg-[#ebe3d7]/60 transition-colors hover:bg-[#ebe3d7]"
+                  className="flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-[#8A9B82]/5 bg-[#E3EAE0]/60 transition-colors hover:bg-[#E3EAE0]"
                 >
-                  <span className="font-serif text-3xl text-[#C19A6B]">+</span>
-                  <span className="font-serif text-sm text-[#332C28]/55">más</span>
+                  <span className="font-serif text-3xl text-[#8A9B82]">+</span>
+                  <span className="font-serif text-sm text-[#2F3530]/55">más</span>
                 </button>
               </div>
-              <p className="mt-8 text-center font-sans text-xs text-[#332C28]/45">
+              <p className="mt-8 text-center font-sans text-xs text-[#2F3530]/45">
                 Las fotos se muestran aquí según se vayan subiendo
               </p>
             </div>
@@ -1027,33 +1037,33 @@ export function WeddingSite() {
 
             {!adminAuthenticated ? (
               <form
-                className="mx-auto max-w-md space-y-5 rounded-2xl bg-white p-6 shadow-sm shadow-[#332C28]/10"
+                className="mx-auto max-w-md space-y-5 rounded-2xl bg-white p-6 shadow-sm shadow-[#2F3530]/10"
                 onSubmit={onAdminLogin}
               >
                 <div>
-                  <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                  <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                     Usuario
                   </label>
                   <input
                     name="username"
                     required
-                    className="mt-2 w-full rounded-lg border border-[#332C28]/15 px-4 py-3 outline-none ring-[#C19A6B]/40 focus:ring-2"
+                    className="mt-2 w-full rounded-lg border border-[#2F3530]/15 px-4 py-3 outline-none ring-[#8A9B82]/40 focus:ring-2"
                   />
                 </div>
                 <div>
-                  <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C19A6B]">
+                  <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                     Contraseña
                   </label>
                   <input
                     name="password"
                     type="password"
                     required
-                    className="mt-2 w-full rounded-lg border border-[#332C28]/15 px-4 py-3 outline-none ring-[#C19A6B]/40 focus:ring-2"
+                    className="mt-2 w-full rounded-lg border border-[#2F3530]/15 px-4 py-3 outline-none ring-[#8A9B82]/40 focus:ring-2"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-lg border border-[#332C28]/25 bg-[#FDFBF9] py-3 font-sans text-xs font-semibold uppercase tracking-[0.2em]"
+                  className="w-full rounded-lg border border-[#2F3530]/25 bg-[#FAFCF9] py-3 font-sans text-xs font-semibold uppercase tracking-[0.2em]"
                 >
                   Entrar
                 </button>
@@ -1069,13 +1079,13 @@ export function WeddingSite() {
               </form>
             ) : (
               <div className="space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#332C28]/10 pb-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#2F3530]/10 pb-4">
                   <button
                     type="button"
                     onClick={() => void loadAdminOverview()}
-                    className="inline-flex items-center gap-2 rounded-lg border border-[#C19A6B]/50 bg-[#fdf8f3] px-4 py-2.5 font-sans text-xs font-semibold uppercase tracking-[0.15em] text-[#332C28] transition-colors hover:bg-[#f5ebe0]"
+                    className="inline-flex items-center gap-2 rounded-lg border border-[#8A9B82]/50 bg-[#F0F4EE] px-4 py-2.5 font-sans text-xs font-semibold uppercase tracking-[0.15em] text-[#2F3530] transition-colors hover:bg-[#E6ECE3]"
                   >
-                    <RefreshCw className="size-4 shrink-0 text-[#C19A6B]" strokeWidth={2} aria-hidden />
+                    <RefreshCw className="size-4 shrink-0 text-[#8A9B82]" strokeWidth={2} aria-hidden />
                     Actualizar panel
                   </button>
                   <div className="ml-auto flex items-center gap-2">
@@ -1084,7 +1094,7 @@ export function WeddingSite() {
                       onClick={() => void downloadAllAdminPhotosZip()}
                       title="Descargar todas las fotos en ZIP"
                       aria-label="Descargar todas las fotos en ZIP"
-                      className="inline-flex size-11 items-center justify-center rounded-lg border border-[#332C28]/25 bg-white text-[#332C28] transition-colors hover:bg-[#FDFBF9]"
+                      className="inline-flex size-11 items-center justify-center rounded-lg border border-[#2F3530]/25 bg-white text-[#2F3530] transition-colors hover:bg-[#FAFCF9]"
                     >
                       <Download className="size-5" strokeWidth={1.75} />
                     </button>
@@ -1093,32 +1103,32 @@ export function WeddingSite() {
                       onClick={onAdminLogout}
                       title="Cerrar sesión"
                       aria-label="Cerrar sesión"
-                      className="inline-flex size-11 items-center justify-center rounded-lg border border-[#332C28]/25 bg-white text-[#332C28] transition-colors hover:bg-[#FDFBF9]"
+                      className="inline-flex size-11 items-center justify-center rounded-lg border border-[#2F3530]/25 bg-white text-[#2F3530] transition-colors hover:bg-[#FAFCF9]"
                     >
                       <LogOut className="size-5" strokeWidth={1.75} />
                     </button>
                   </div>
                 </div>
 
-                <article className="w-full rounded-2xl bg-white p-5 shadow-sm shadow-[#332C28]/10 sm:p-7">
+                <article className="w-full rounded-2xl bg-white p-5 shadow-sm shadow-[#2F3530]/10 sm:p-7">
                   <h3 className="font-serif text-2xl">Confirmaciones</h3>
                   <div className="mt-4 overflow-x-auto">
                     <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
-                      <thead className="text-[#C19A6B]">
+                      <thead className="text-[#8A9B82]">
                         <tr>
-                          <th className="border-b border-[#332C28]/10 py-3 pr-6 align-bottom font-semibold">
+                          <th className="border-b border-[#2F3530]/10 py-3 pr-6 align-bottom font-semibold">
                             Titular
                           </th>
-                          <th className="border-b border-[#332C28]/10 py-3 px-10 align-bottom font-semibold whitespace-nowrap">
+                          <th className="border-b border-[#2F3530]/10 py-3 px-10 align-bottom font-semibold whitespace-nowrap">
                             Asistentes
                           </th>
-                          <th className="border-b border-[#332C28]/10 py-3 pl-4 pr-6 align-bottom font-semibold">
+                          <th className="border-b border-[#2F3530]/10 py-3 pl-4 pr-6 align-bottom font-semibold">
                             Acompañantes
                           </th>
-                          <th className="border-b border-[#332C28]/10 py-3 px-6 align-bottom font-semibold whitespace-nowrap">
+                          <th className="border-b border-[#2F3530]/10 py-3 px-6 align-bottom font-semibold whitespace-nowrap">
                             Bus
                           </th>
-                          <th className="border-b border-[#332C28]/10 py-3 pl-4 align-bottom font-semibold">
+                          <th className="border-b border-[#2F3530]/10 py-3 pl-4 align-bottom font-semibold">
                             Alergias
                           </th>
                         </tr>
@@ -1126,13 +1136,13 @@ export function WeddingSite() {
                       <tbody>
                         {(adminOverview?.rsvps ?? []).map((row) => (
                           <tr key={row.id} className="align-top">
-                            <td className="border-b border-[#332C28]/8 py-4 pr-6 align-top text-[#332C28]">
+                            <td className="border-b border-[#2F3530]/8 py-4 pr-6 align-top text-[#2F3530]">
                               {row.name}
                             </td>
-                            <td className="border-b border-[#332C28]/8 py-4 px-10 align-top whitespace-nowrap tabular-nums text-center text-[#332C28]">
+                            <td className="border-b border-[#2F3530]/8 py-4 px-10 align-top whitespace-nowrap tabular-nums text-center text-[#2F3530]">
                               {row.guestCount}
                             </td>
-                            <td className="min-w-[240px] border-b border-[#332C28]/8 py-4 pl-4 pr-6 align-top text-[#332C28]/90">
+                            <td className="min-w-[240px] border-b border-[#2F3530]/8 py-4 pl-4 pr-6 align-top text-[#2F3530]/90">
                               {(row.companions?.length ?? 0) > 0 ? (
                                 <ul className="m-0 list-none space-y-3 p-0">
                                   {row.companions.map((c, i) => (
@@ -1141,12 +1151,12 @@ export function WeddingSite() {
                                       {(c.isChild || c.kidsMenu) ? (
                                         <div className="mt-1 flex flex-wrap gap-1.5">
                                           {c.isChild ? (
-                                            <span className="inline-block rounded bg-[#ebe3d7] px-2 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wider text-[#332C28]/75">
+                                            <span className="inline-block rounded bg-[#E3EAE0] px-2 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wider text-[#2F3530]/75">
                                               Niño/a
                                             </span>
                                           ) : null}
                                           {c.kidsMenu ? (
-                                            <span className="inline-block rounded bg-[#f5ebe0] px-2 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wider text-[#332C28]/75">
+                                            <span className="inline-block rounded bg-[#E6ECE3] px-2 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wider text-[#2F3530]/75">
                                               Menú infantil
                                             </span>
                                           ) : null}
@@ -1156,13 +1166,13 @@ export function WeddingSite() {
                                   ))}
                                 </ul>
                               ) : (
-                                <span className="text-[#332C28]/45">-</span>
+                                <span className="text-[#2F3530]/45">-</span>
                               )}
                             </td>
-                            <td className="border-b border-[#332C28]/8 py-4 px-6 align-top whitespace-nowrap">
+                            <td className="border-b border-[#2F3530]/8 py-4 px-6 align-top whitespace-nowrap">
                               {row.needsBus ? "Si" : "No"}
                             </td>
-                            <td className="border-b border-[#332C28]/8 py-4 pl-4 align-top">
+                            <td className="border-b border-[#2F3530]/8 py-4 pl-4 align-top">
                               {row.allergies || "-"}
                             </td>
                           </tr>
@@ -1170,43 +1180,43 @@ export function WeddingSite() {
                       </tbody>
                     </table>
                     {(adminOverview?.rsvps?.length ?? 0) === 0 ? (
-                      <p className="py-4 text-sm text-[#332C28]/55">Sin confirmaciones por ahora.</p>
+                      <p className="py-4 text-sm text-[#2F3530]/55">Sin confirmaciones por ahora.</p>
                     ) : null}
                   </div>
                 </article>
 
-                <article className="rounded-2xl bg-white p-5 shadow-sm shadow-[#332C28]/10">
+                <article className="rounded-2xl bg-white p-5 shadow-sm shadow-[#2F3530]/10">
                   <h3 className="font-serif text-2xl">Canciones propuestas</h3>
-                  <ul className="mt-4 divide-y divide-[#332C28]/10">
+                  <ul className="mt-4 divide-y divide-[#2F3530]/10">
                     {(adminOverview?.songs ?? []).map((row) => (
                       <li key={row.id} className="py-3">
                         <p className="font-medium">{row.songTitle}</p>
-                        <p className="text-sm text-[#332C28]/65">
+                        <p className="text-sm text-[#2F3530]/65">
                           {row.artist ? `${row.artist} · ` : ""}sugerida por {row.guestName}
                         </p>
                       </li>
                     ))}
                   </ul>
                   {(adminOverview?.songs?.length ?? 0) === 0 ? (
-                    <p className="py-4 text-sm text-[#332C28]/55">Sin canciones todavía.</p>
+                    <p className="py-4 text-sm text-[#2F3530]/55">Sin canciones todavía.</p>
                   ) : null}
                 </article>
 
-                <article className="rounded-2xl bg-white p-5 shadow-sm shadow-[#332C28]/10">
+                <article className="rounded-2xl bg-white p-5 shadow-sm shadow-[#2F3530]/10">
                   <h3 className="font-serif text-2xl">Fotos subidas</h3>
-                  <ul className="mt-4 divide-y divide-[#332C28]/10">
+                  <ul className="mt-4 divide-y divide-[#2F3530]/10">
                     {(adminOverview?.photos ?? []).map((row) => (
                       <li key={row.id} className="flex items-center justify-between gap-4 py-3">
                         <div>
                           <p className="font-medium">{row.guestName}</p>
-                          <p className="text-xs text-[#332C28]/55">
+                          <p className="text-xs text-[#2F3530]/55">
                             {row.createdAt ? new Date(row.createdAt).toLocaleString() : "-"}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => void downloadAdminPhoto(row.id)}
-                          className="rounded-lg border border-[#332C28]/25 px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em]"
+                          className="rounded-lg border border-[#2F3530]/25 px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em]"
                         >
                           Descargar
                         </button>
@@ -1214,7 +1224,7 @@ export function WeddingSite() {
                     ))}
                   </ul>
                   {(adminOverview?.photos?.length ?? 0) === 0 ? (
-                    <p className="py-4 text-sm text-[#332C28]/55">Sin fotos todavía.</p>
+                    <p className="py-4 text-sm text-[#2F3530]/55">Sin fotos todavía.</p>
                   ) : null}
                 </article>
               </div>
