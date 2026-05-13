@@ -19,8 +19,13 @@ function getMongoClientPromise(): Promise<MongoClient> {
         strict: true,
         deprecationErrors: true,
       },
+      // Evita fallos TLS en Windows / Node reciente con Atlas.
+      autoSelectFamily: false,
     });
-    global._mongoClientPromise = client.connect();
+    global._mongoClientPromise = client.connect().catch((err) => {
+      global._mongoClientPromise = undefined;
+      throw err;
+    });
   }
 
   return global._mongoClientPromise;

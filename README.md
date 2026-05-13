@@ -52,6 +52,14 @@ Los textos del evento (nombres, fechas, hotel, direcciones, etc.) se centralizan
 
 4. **Fotos con Cloudinary** (recomendado si Atlas tiene poco espacio): define las tres variables `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y `CLOUDINARY_API_SECRET`. Opcional: `CLOUDINARY_FOLDER` (por defecto `boda-fotos`). No hace falta crear un *upload preset*; la subida es por API desde el servidor. Sin estas variables, las fotos se guardan en Mongo como imagen en base64 (ocupa mucho más).
 
+5. **MongoDB Atlas — acceso de red** (si ves errores 500 o `tlsv1 alert internal error` en la terminal):
+
+   - En [MongoDB Atlas](https://cloud.mongodb.com) → tu proyecto → **Network Access** → **Add IP Address**.
+   - Para desarrollo en casa: **Allow Access from Anywhere** (`0.0.0.0/0`) o añade tu IP actual.
+   - Comprueba que el cluster no esté **pausado** (Database → Resume si aplica).
+   - Copia la cadena de conexión desde **Database → Connect → Drivers** y pégala en `MONGODB_URI` del `.env` (formato `mongodb+srv://...` recomendado por Atlas).
+   - Tras cambiar `.env`, reinicia `npm run dev`.
+
 ## Ejecutar en local
 
 ```bash

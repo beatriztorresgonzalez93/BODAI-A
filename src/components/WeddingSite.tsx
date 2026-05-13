@@ -23,6 +23,7 @@ import {
   useState,
 } from "react";
 import { SectionHeading } from "@/components/SectionHeading";
+import { AdminSeating } from "@/components/AdminSeating";
 import { SpotifyIcon } from "@/components/SpotifyIcon";
 import { compressImageFile } from "@/lib/compress-image";
 import { weddingConfig } from "@/lib/wedding-config";
@@ -224,7 +225,8 @@ export function WeddingSite() {
 
   async function onRsvpSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const guestCount = Number(fd.get("guestCount") ?? 1);
     const companionSlots = Math.max(0, guestCount - 1);
     const companions = Array.from({ length: companionSlots }, (_, i) => ({
@@ -245,14 +247,15 @@ export function WeddingSite() {
       message: data.message,
     });
     if (response.ok) {
-      e.currentTarget.reset();
+      form.reset();
       setRsvpGuestCount(1);
     }
   }
 
   async function onSongSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const payload = {
       guestName: String(fd.get("guestName") ?? ""),
       songTitleArtist: String(fd.get("songTitleArtist") ?? ""),
@@ -264,7 +267,7 @@ export function WeddingSite() {
       message: data.message,
     });
     if (response.ok) {
-      e.currentTarget.reset();
+      form.reset();
       void loadSongs();
     }
   }
@@ -320,7 +323,8 @@ export function WeddingSite() {
 
   async function onAdminLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const payload = {
       username: String(fd.get("username") ?? ""),
       password: String(fd.get("password") ?? ""),
@@ -333,7 +337,7 @@ export function WeddingSite() {
     if (response.ok) {
       setAdminAuthenticated(true);
       void loadAdminOverview();
-      e.currentTarget.reset();
+      form.reset();
     }
   }
 
@@ -409,7 +413,7 @@ export function WeddingSite() {
       </nav>
 
       <div
-        className={`mx-auto px-5 pt-10 sm:px-8 ${tab === "admin" ? "max-w-5xl" : "max-w-2xl"}`}
+        className={`mx-auto px-5 pt-10 sm:px-8 ${tab === "admin" ? "max-w-7xl" : "max-w-2xl"}`}
       >
         {tab === "home" ? (
           <section className="flex flex-col items-center pb-12 text-center">
@@ -1184,6 +1188,8 @@ export function WeddingSite() {
                     ) : null}
                   </div>
                 </article>
+
+                <AdminSeating />
 
                 <article className="rounded-2xl bg-white p-5 shadow-sm shadow-[#2F3530]/10">
                   <h3 className="font-serif text-2xl">Canciones propuestas</h3>
