@@ -39,7 +39,7 @@ export type GuestPerson = {
 export type RsvpForSeating = {
   id: string;
   name: string;
-  companions: { name: string; isChild: boolean; kidsMenu: boolean }[];
+  companions: { name: string; isChild: boolean; kidsMenu: boolean; allergies: string }[];
   allergies: string;
   needsBus: boolean;
 };
@@ -70,7 +70,7 @@ export function flattenRsvpGuests(rsvps: RsvpForSeating[]): GuestPerson[] {
         name,
         isChild: c.isChild,
         kidsMenu: c.kidsMenu,
-        allergies: rsvp.allergies,
+        allergies: (c.allergies ?? "").trim(),
         needsBus: rsvp.needsBus,
         partyLead: rsvp.name.trim(),
       });

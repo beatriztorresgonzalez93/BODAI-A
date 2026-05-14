@@ -5,6 +5,7 @@ type CompanionIn = {
   name?: string;
   isChild?: boolean;
   kidsMenu?: boolean;
+  allergies?: string;
 };
 
 type RsvpPayload = {
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
       name: string;
       isChild: boolean;
       kidsMenu: boolean;
+      allergies: string;
     }[] = [];
 
     if (expectedCompanions > 0) {
@@ -53,6 +55,7 @@ export async function POST(request: Request) {
             name: String(c?.name ?? "").trim(),
             isChild: Boolean(c?.isChild),
             kidsMenu: Boolean(c?.kidsMenu),
+            allergies: String(c?.allergies ?? "").trim(),
           }));
       } else if (Array.isArray(body.companionNames)) {
         companions = body.companionNames
@@ -61,6 +64,7 @@ export async function POST(request: Request) {
             name: String(s ?? "").trim(),
             isChild: false,
             kidsMenu: false,
+            allergies: "",
           }));
       }
 

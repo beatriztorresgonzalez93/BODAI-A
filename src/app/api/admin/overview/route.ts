@@ -33,12 +33,14 @@ export async function GET() {
                 name: String(o?.name ?? "").trim(),
                 isChild: Boolean(o?.isChild),
                 kidsMenu: Boolean(o?.kidsMenu),
+                allergies: String(o?.allergies ?? "").trim(),
               };
             })
           : legacyNames.map((n) => ({
               name: n,
               isChild: false,
               kidsMenu: false,
+              allergies: "",
             }));
 
       return {

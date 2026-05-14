@@ -23,6 +23,7 @@ import {
   useState,
 } from "react";
 import { SectionHeading } from "@/components/SectionHeading";
+import { HistoriaStory } from "@/components/HistoriaStory";
 import { AdminSeating } from "@/components/AdminSeating";
 import { SpotifyIcon } from "@/components/SpotifyIcon";
 import { compressImageFile } from "@/lib/compress-image";
@@ -63,6 +64,7 @@ type CompanionRow = {
   name: string;
   isChild: boolean;
   kidsMenu: boolean;
+  allergies: string;
 };
 
 type RsvpRow = {
@@ -85,7 +87,7 @@ const tabs: { id: TabId; label: string }[] = [
   { id: "home", label: "Inicio" },
   { id: "story", label: "Historia" },
   { id: "day", label: "Gran día" },
-  { id: "rsvp", label: "RSVP" },
+  { id: "rsvp", label: "Asistencia" },
   { id: "travel", label: "Viajeros" },
   { id: "music", label: "Música" },
   { id: "photos", label: "Fotos" },
@@ -233,12 +235,13 @@ export function WeddingSite() {
       name: String(fd.get(`companion_${i}_name`) ?? "").trim(),
       isChild: fd.get(`companion_${i}_isChild`) === "on",
       kidsMenu: fd.get(`companion_${i}_kidsMenu`) === "on",
+      allergies: String(fd.get(`companion_${i}_allergies`) ?? "").trim(),
     }));
     const payload = {
       name: String(fd.get("name") ?? ""),
       guestCount,
       companions,
-      allergies: String(fd.get("allergies") ?? ""),
+      allergies: String(fd.get("lead_allergies") ?? "").trim(),
       needsBus: String(fd.get("needsBus")) === "yes",
     };
     const { response, data } = await postJson("/api/rsvp", payload);
@@ -387,82 +390,141 @@ export function WeddingSite() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F2F5F0] pb-16 font-sans text-[#2F3530]">
-      <nav className="sticky top-0 z-20 border-b border-[#2F3530]/10 bg-[#F2F5F0]/95 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-3xl items-center gap-1 overflow-x-auto px-3 py-3 [-ms-overflow-style:none] [scrollbar-width:none] sm:justify-center sm:px-4 [&::-webkit-scrollbar]:hidden">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => {
-                setTab(t.id);
-                if (t.id === "admin" && adminAuthenticated) {
-                  void loadAdminOverview();
-                }
-              }}
-              className={`shrink-0 rounded-full px-3 py-1.5 font-sans text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors sm:text-xs ${
-                tab === t.id
-                  ? "bg-[#2F3530] text-[#FAFCF9]"
-                  : "text-[#2F3530]/70 hover:bg-[#2F3530]/10"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+    <div className={`min-h-screen overflow-x-hidden bg-[#F2F5F0] font-sans text-[#2F3530] ${tab === "home" ? "relative pb-0" : "pb-16"}`}>
+      <nav
+        className={
+          tab === "home"
+            ? "absolute inset-x-0 top-0 z-30 border-b border-white/15 bg-black/10 backdrop-blur-md"
+            : "sticky top-0 z-20 border-b border-[#2F3530]/10 bg-[#F2F5F0]/95 backdrop-blur-sm"
+        }
+      >
+        <div className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div
+            className="mx-auto flex w-max min-w-full max-w-3xl items-stretch justify-start px-6 sm:justify-center sm:px-8"
+            role="tablist"
+            aria-label="Secciones del sitio"
+          >
+          {tabs.map((t) => {
+            const active = tab === t.id;
+            const onHome = tab === "home";
+            return (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => {
+                  setTab(t.id);
+                  if (t.id === "admin" && adminAuthenticated) {
+                    void loadAdminOverview();
+                  }
+                }}
+                className={`relative shrink-0 border-b-2 px-3 py-3.5 font-sans text-[11px] font-semibold uppercase tracking-[0.1em] transition-colors sm:px-4 sm:text-xs ${
+                  onHome
+                    ? active
+                      ? "-mb-px border-white text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]"
+                      : "border-transparent text-white/55 hover:border-white/30 hover:text-white/90"
+                    : active
+                      ? "-mb-px border-[#8A9B82] text-[#2F3530]"
+                      : "border-transparent text-[#2F3530]/50 hover:border-[#8A9B82]/25 hover:text-[#2F3530]/80"
+                }`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+            <span className="w-6 shrink-0 sm:w-8" aria-hidden />
+          </div>
         </div>
       </nav>
 
       <div
-        className={`mx-auto px-5 pt-10 sm:px-8 ${tab === "admin" ? "max-w-7xl" : "max-w-2xl"}`}
+        className={`mx-auto px-5 sm:px-8 ${tab === "home" ? "pt-0" : "pt-10"} ${tab === "admin" ? "max-w-7xl" : "max-w-2xl"}`}
       >
         {tab === "home" ? (
-          <section className="flex flex-col items-center pb-12 text-center">
-            <div className="relative mx-auto mb-8 size-48 overflow-hidden rounded-full sm:size-56">
+          <section className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2">
+            <div className="relative min-h-[100dvh] w-full sm:min-h-0">
               <Image
-                src="/logo.png"
-                alt="Logo Inmaculada & Alejandro"
+                src={weddingConfig.coverImageSrc}
+                alt={`${weddingConfig.coupleLine} — foto de portada`}
                 fill
-                className="object-cover"
-                sizes="350px"
+                className="object-cover sm:hidden"
+                style={{ objectPosition: weddingConfig.coverImageMobileFocus }}
+                sizes="100vw"
                 priority
+                unoptimized={process.env.NODE_ENV === "development"}
               />
-            </div>
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8A9B82]">
-              {weddingConfig.headline}
-            </p>
-            <h1 className="mt-5 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 font-serif text-4xl font-normal tracking-tight text-[#2F3530] sm:text-5xl">
-              <span>{nameLeft}</span>
-              <span className="font-serif text-3xl text-[#8A9B82] sm:text-4xl">
-                &
-              </span>
-              <span>{nameRight}</span>
-            </h1>
-            <div className="mx-auto mt-6 h-px w-14 bg-[#8A9B82]" aria-hidden />
-            <p className="mt-6 font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-[#2F3530]/85">
-              {weddingConfig.dateLine}
-            </p>
+              <Image
+                src={weddingConfig.coverImageSrc}
+                alt=""
+                aria-hidden
+                width={3127}
+                height={1644}
+                className="hidden h-auto w-full sm:block"
+                sizes="100vw"
+                priority
+                unoptimized={process.env.NODE_ENV === "development"}
+              />
 
-            <div className="mt-12 grid w-full max-w-md grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-              {(
-                [
-                  ["DÍAS", countdown.days],
-                  ["HORAS", countdown.hours],
-                  ["MINUTOS", countdown.minutes],
-                  ["SEGUNDOS", countdown.seconds],
-                ] as const
-              ).map(([label, value]) => (
-                <div
-                  key={label}
-                  className="rounded-lg bg-[#FAFCF9] px-3 py-5 shadow-sm shadow-[#2F3530]/5"
-                >
-                  <p className="font-serif text-3xl font-normal tabular-nums text-[#2F3530] sm:text-4xl">
-                    {value}
+              <div className="absolute left-3 top-[4.25rem] z-20 size-16 overflow-hidden rounded-full shadow-lg ring-2 ring-white/80 sm:left-8 sm:top-[4.5rem] sm:size-32">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Inmaculada & Alejandro"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 64px, 128px"
+                  priority
+                />
+              </div>
+
+              <div className="absolute inset-0 z-10 flex flex-col px-4 pt-20 sm:inset-x-0 sm:inset-y-auto sm:top-0 sm:block sm:justify-start sm:px-8 sm:pb-0 sm:pt-12">
+                <div className="mx-auto w-full max-w-[calc(100%-4.5rem)] text-center sm:max-w-none">
+                  <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#FAFCF9] drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)] sm:text-[11px] sm:tracking-[0.35em]">
+                    {weddingConfig.headline}
                   </p>
-                  <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8A9B82]">
-                    {label}
+                  <h1 className="mt-2 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-0.5 font-serif text-3xl font-normal tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] sm:mt-4 sm:gap-x-3 sm:text-5xl">
+                    <span>{nameLeft}</span>
+                    <span className="font-serif text-2xl text-[#DDE8D8] sm:text-4xl">
+                      &
+                    </span>
+                    <span>{nameRight}</span>
+                  </h1>
+                  <div className="mx-auto mt-3 h-px w-12 bg-white/70 sm:mt-4 sm:w-14" aria-hidden />
+                  <p className="mt-3 px-1 font-sans text-[9px] font-semibold uppercase leading-relaxed tracking-[0.2em] text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.4)] sm:mt-4 sm:text-[11px] sm:tracking-[0.28em]">
+                    {weddingConfig.dateLine}
                   </p>
+
+                  <div className="mx-auto mt-4 grid w-full max-w-md grid-cols-4 gap-1.5 sm:mt-6 sm:grid-cols-4 sm:gap-4">
+                    {(
+                      [
+                        ["DÍAS", countdown.days],
+                        ["HORAS", countdown.hours],
+                        ["MIN", countdown.minutes],
+                        ["SEG", countdown.seconds],
+                      ] as const
+                    ).map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="rounded-md bg-black/30 px-1 py-2 shadow-sm ring-1 ring-white/25 backdrop-blur-sm sm:rounded-lg sm:bg-white/15 sm:px-3 sm:py-5 sm:shadow-black/10 sm:ring-white/25 sm:backdrop-blur-[2px]"
+                      >
+                        <p className="font-serif text-lg font-normal tabular-nums leading-none text-white sm:text-4xl">
+                          {value}
+                        </p>
+                        <p className="mt-1 font-sans text-[7px] font-semibold uppercase tracking-[0.15em] text-[#E8EDE5] sm:mt-2 sm:text-[10px] sm:tracking-[0.25em]">
+                          <span className="sm:hidden">{label}</span>
+                          <span className="hidden sm:inline">
+                            {label === "MIN"
+                              ? "MINUTOS"
+                              : label === "SEG"
+                                ? "SEGUNDOS"
+                                : label}
+                          </span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </section>
         ) : null}
@@ -470,11 +532,7 @@ export function WeddingSite() {
         {tab === "story" ? (
           <section className="pb-16">
             <SectionHeading title="Nuestra historia" />
-            <div className="mx-auto max-w-lg space-y-5 text-center font-sans text-sm leading-relaxed text-[#2F3530]/80">
-              {weddingConfig.historia.paragraphs.map((p) => (
-                <p key={p}>{p}</p>
-              ))}
-            </div>
+            <HistoriaStory blocks={weddingConfig.historia.blocks} />
           </section>
         ) : null}
 
@@ -591,6 +649,14 @@ export function WeddingSite() {
                   placeholder="Elena García López"
                   className="mt-2 w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
                 />
+                <label className="mt-3 block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+                  Alergias o intolerancias de esta persona
+                </label>
+                <input
+                  name="lead_allergies"
+                  placeholder="Sin gluten, vegetariano, alergia al marisco… (opcional)"
+                  className="mt-2 w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
+                />
               </div>
               <div>
                 <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
@@ -653,21 +719,18 @@ export function WeddingSite() {
                           Menú infantil
                         </label>
                       </div>
+                      <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+                        Alergias o intolerancias de esta persona
+                      </label>
+                      <input
+                        name={`companion_${i}_allergies`}
+                        placeholder="Sin gluten, vegetariano… (opcional)"
+                        className="w-full rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
+                      />
                     </div>
                   ))}
                 </div>
               ) : null}
-              <div>
-                <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
-                  Alergias o intolerancias alimentarias
-                </label>
-                <textarea
-                  name="allergies"
-                  rows={4}
-                  placeholder="Sin gluten, vegetariano, alergia al marisco..."
-                  className="mt-2 w-full resize-y rounded-lg border border-[#2F3530]/15 bg-white px-4 py-3 font-sans text-sm text-[#2F3530] outline-none ring-[#8A9B82]/40 placeholder:text-[#2F3530]/35 focus:ring-2"
-                />
-              </div>
               <div>
                 <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   ¿Usarás el autobús de cortesía?
@@ -1177,7 +1240,18 @@ export function WeddingSite() {
                               {row.needsBus ? "Si" : "No"}
                             </td>
                             <td className="border-b border-[#2F3530]/8 py-4 pl-4 align-top">
-                              {row.allergies || "-"}
+                              <ul className="m-0 list-none space-y-2 p-0 text-sm">
+                                <li>
+                                  <span className="font-medium">{row.name}:</span>{" "}
+                                  {row.allergies || "—"}
+                                </li>
+                                {(row.companions ?? []).map((c, i) => (
+                                  <li key={i}>
+                                    <span className="font-medium">{c.name}:</span>{" "}
+                                    {c.allergies || "—"}
+                                  </li>
+                                ))}
+                              </ul>
                             </td>
                           </tr>
                         ))}
