@@ -390,14 +390,8 @@ export function WeddingSite() {
   }
 
   return (
-    <div className={`min-h-screen overflow-x-hidden bg-[#F2F5F0] font-sans text-[#2F3530] ${tab === "home" ? "relative pb-0" : "pb-16"}`}>
-      <nav
-        className={
-          tab === "home"
-            ? "absolute inset-x-0 top-0 z-30 border-b border-white/15 bg-black/10 backdrop-blur-md"
-            : "sticky top-0 z-20 border-b border-[#2F3530]/10 bg-[#F2F5F0]/95 backdrop-blur-sm"
-        }
-      >
+    <div className="min-h-screen overflow-x-hidden bg-[#F2F5F0] pb-16 font-sans text-[#2F3530]">
+      <nav className="sticky top-0 z-20 border-b border-[#2F3530]/10 bg-[#F2F5F0]/95 backdrop-blur-sm">
         <div className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div
             className="mx-auto flex w-max min-w-full max-w-3xl items-stretch justify-start px-6 sm:justify-center sm:px-8"
@@ -406,7 +400,6 @@ export function WeddingSite() {
           >
           {tabs.map((t) => {
             const active = tab === t.id;
-            const onHome = tab === "home";
             return (
               <button
                 key={t.id}
@@ -420,13 +413,9 @@ export function WeddingSite() {
                   }
                 }}
                 className={`relative shrink-0 border-b-2 px-3 py-3.5 font-sans text-[11px] font-semibold uppercase tracking-[0.1em] transition-colors sm:px-4 sm:text-xs ${
-                  onHome
-                    ? active
-                      ? "-mb-px border-white text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]"
-                      : "border-transparent text-white/55 hover:border-white/30 hover:text-white/90"
-                    : active
-                      ? "-mb-px border-[#8A9B82] text-[#2F3530]"
-                      : "border-transparent text-[#2F3530]/50 hover:border-[#8A9B82]/25 hover:text-[#2F3530]/80"
+                  active
+                    ? "-mb-px border-[#8A9B82] text-[#2F3530]"
+                    : "border-transparent text-[#2F3530]/50 hover:border-[#8A9B82]/25 hover:text-[#2F3530]/80"
                 }`}
               >
                 {t.label}
@@ -439,91 +428,111 @@ export function WeddingSite() {
       </nav>
 
       <div
-        className={`mx-auto px-5 sm:px-8 ${tab === "home" ? "pt-0" : "pt-10"} ${tab === "admin" ? "max-w-7xl" : "max-w-2xl"}`}
+        className={`mx-auto px-5 sm:px-8 ${tab === "home" ? "pt-0" : "pt-8 sm:pt-10"} ${tab === "admin" ? "max-w-7xl" : "max-w-2xl"}`}
       >
         {tab === "home" ? (
           <section className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2">
-            <div className="relative min-h-[100dvh] w-full sm:min-h-0">
+            <div className="relative aspect-[2.3/1] w-full sm:aspect-[2.6/1]">
               <Image
                 src={weddingConfig.coverImageSrc}
                 alt={`${weddingConfig.coupleLine} — foto de portada`}
                 fill
-                className="object-cover sm:hidden"
-                style={{ objectPosition: weddingConfig.coverImageMobileFocus }}
-                sizes="100vw"
-                priority
-                unoptimized={process.env.NODE_ENV === "development"}
-              />
-              <Image
-                src={weddingConfig.coverImageSrc}
-                alt=""
-                aria-hidden
-                width={3127}
-                height={1644}
-                className="hidden h-auto w-full sm:block"
+                className="object-cover object-[88%_42%]"
                 sizes="100vw"
                 priority
                 unoptimized={process.env.NODE_ENV === "development"}
               />
 
-              <div className="absolute left-3 top-[4.25rem] z-20 size-16 overflow-hidden rounded-full shadow-lg ring-2 ring-white/80 sm:left-8 sm:top-[4.5rem] sm:size-32">
+              <div className="absolute left-4 top-4 z-20 hidden size-20 overflow-hidden rounded-full shadow-lg ring-2 ring-white/80 sm:left-6 sm:top-5 sm:block sm:size-28">
                 <Image
                   src="/logo.png"
                   alt="Logo Inmaculada & Alejandro"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 640px) 64px, 128px"
+                  sizes="(max-width: 640px) 80px, 112px"
                   priority
                 />
               </div>
 
-              <div className="absolute inset-0 z-10 flex flex-col px-4 pt-20 sm:inset-x-0 sm:inset-y-auto sm:top-0 sm:block sm:justify-start sm:px-8 sm:pb-0 sm:pt-12">
-                <div className="mx-auto w-full max-w-[calc(100%-4.5rem)] text-center sm:max-w-none">
-                  <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#FAFCF9] drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)] sm:text-[11px] sm:tracking-[0.35em]">
-                    {weddingConfig.headline}
-                  </p>
-                  <h1 className="mt-2 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-0.5 font-serif text-3xl font-normal tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] sm:mt-4 sm:gap-x-3 sm:text-5xl">
-                    <span>{nameLeft}</span>
-                    <span className="font-serif text-2xl text-[#DDE8D8] sm:text-4xl">
-                      &
-                    </span>
-                    <span>{nameRight}</span>
-                  </h1>
-                  <div className="mx-auto mt-3 h-px w-12 bg-white/70 sm:mt-4 sm:w-14" aria-hidden />
-                  <p className="mt-3 px-1 font-sans text-[9px] font-semibold uppercase leading-relaxed tracking-[0.2em] text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.4)] sm:mt-4 sm:text-[11px] sm:tracking-[0.28em]">
-                    {weddingConfig.dateLine}
-                  </p>
+              <div className="absolute inset-x-0 top-0 z-10 flex flex-col items-center px-5 pt-4 text-center sm:px-8 sm:pt-10">
+                <p className="font-sans text-[9px] font-semibold uppercase tracking-[0.28em] text-[#FAFCF9] drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)] sm:text-[11px] sm:tracking-[0.35em]">
+                  {weddingConfig.headline}
+                </p>
+                <h1 className="mt-2 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-0.5 font-serif text-2xl font-normal tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] sm:mt-5 sm:gap-x-3 sm:text-5xl">
+                  <span>{nameLeft}</span>
+                  <span className="font-serif text-xl text-[#DDE8D8] sm:text-4xl">
+                    &
+                  </span>
+                  <span>{nameRight}</span>
+                </h1>
 
-                  <div className="mx-auto mt-4 grid w-full max-w-md grid-cols-4 gap-1.5 sm:mt-6 sm:grid-cols-4 sm:gap-4">
-                    {(
-                      [
-                        ["DÍAS", countdown.days],
-                        ["HORAS", countdown.hours],
-                        ["MIN", countdown.minutes],
-                        ["SEG", countdown.seconds],
-                      ] as const
-                    ).map(([label, value]) => (
-                      <div
-                        key={label}
-                        className="rounded-md bg-black/30 px-1 py-2 shadow-sm ring-1 ring-white/25 backdrop-blur-sm sm:rounded-lg sm:bg-white/15 sm:px-3 sm:py-5 sm:shadow-black/10 sm:ring-white/25 sm:backdrop-blur-[2px]"
-                      >
-                        <p className="font-serif text-lg font-normal tabular-nums leading-none text-white sm:text-4xl">
-                          {value}
-                        </p>
-                        <p className="mt-1 font-sans text-[7px] font-semibold uppercase tracking-[0.15em] text-[#E8EDE5] sm:mt-2 sm:text-[10px] sm:tracking-[0.25em]">
-                          <span className="sm:hidden">{label}</span>
-                          <span className="hidden sm:inline">
-                            {label === "MIN"
-                              ? "MINUTOS"
-                              : label === "SEG"
-                                ? "SEGUNDOS"
-                                : label}
-                          </span>
-                        </p>
-                      </div>
-                    ))}
+                <div className="hidden w-full sm:contents">
+                  <div className="mx-auto mt-5 h-px w-14 bg-white/70 sm:mt-6" aria-hidden />
+                <p className="mt-5 font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.4)] sm:mt-6">
+                  {weddingConfig.dateLine}
+                </p>
+
+                <div className="mt-6 grid w-full max-w-md grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-4 sm:gap-4">
+                  {(
+                    [
+                      ["DÍAS", countdown.days],
+                      ["HORAS", countdown.hours],
+                      ["MINUTOS", countdown.minutes],
+                      ["SEGUNDOS", countdown.seconds],
+                    ] as const
+                  ).map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="rounded-lg bg-white/15 px-3 py-4 shadow-sm shadow-black/10 ring-1 ring-white/25 backdrop-blur-[2px] sm:py-5"
+                    >
+                      <p className="font-serif text-3xl font-normal tabular-nums text-white sm:text-4xl">
+                        {value}
+                      </p>
+                      <p className="mt-2 font-sans text-[10px] font-semibold uppercase tracking-[0.25em] text-[#E8EDE5]">
+                        {label}
+                      </p>
+                    </div>
+                  ))}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="px-5 py-5 text-center sm:hidden">
+              <p className="font-sans text-[10px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-[#2F3530]/90">
+                {weddingConfig.dateLine}
+              </p>
+              <div className="mx-auto mt-5 grid w-full max-w-sm grid-cols-2 gap-2.5">
+                {(
+                  [
+                    ["DÍAS", countdown.days],
+                    ["HORAS", countdown.hours],
+                    ["MINUTOS", countdown.minutes],
+                    ["SEGUNDOS", countdown.seconds],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="rounded-lg border border-[#8A9B82]/20 bg-[#FAFCF9] px-2 py-3 shadow-sm shadow-[#2F3530]/5"
+                  >
+                    <p className="font-serif text-2xl font-normal tabular-nums text-[#2F3530]">
+                      {value}
+                    </p>
+                    <p className="mt-1 font-sans text-[9px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+                      {label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pointer-events-none relative mx-auto mt-10 size-52 opacity-[0.38] sm:hidden" aria-hidden>
+                <Image
+                  src="/logo.png"
+                  alt=""
+                  fill
+                  className="object-contain"
+                  sizes="208px"
+                />
               </div>
             </div>
           </section>

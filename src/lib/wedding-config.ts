@@ -7,7 +7,7 @@ export const weddingConfig = {
   coupleLine: "Inmaculada & Alejandro",
   headline: "NOS CASAMOS",
   /** Foto principal en public/portada4.jpg */
-  coverImageSrc: "/portada4.jpg",
+  coverImageSrc: "/portada6.jpeg",
   /** Punto focal en móvil (object-position): novios abajo-derecha */
   coverImageMobileFocus: "90% 74%",
   dateLine: "SÁBADO · 5 DE DICIEMBRE DE 2026 · SEVILLA",
