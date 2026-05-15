@@ -14,6 +14,11 @@ export const weddingConfig = {
   /** Hora de referencia para la cuenta atrás (CET); cambia si ya tienes horario cerrado */
   countdownTarget: "2026-12-05T17:30:00+01:00",
   rsvpDeadlineLine: "ANTES DEL 1 DE OCTUBRE DE 2026",
+  /** Música de fondo en public/ (mp3). volume: 0–1 dentro de la web (no sustituye el volumen del móvil/PC). */
+  backgroundMusic: {
+    src: "/musica-fondo.mp3",
+    volume: 0.25,
+  },
   granDia: {
     fecha: "5 diciembre 2026",
     ceremonia: "12.30h",
@@ -29,6 +34,20 @@ export const weddingConfig = {
       { time: "17:30", label: "Tarta y brindis" },
       { time: "18:00", label: "Fiesta y baile" },
       { time: "00:00", label: "Cierre con fuegos artificiales" },
+    ],
+  },
+  autobus: {
+    subtitle: "SERVICIO DE AUTOBÚS PARA INVITADOS",
+    salida: {
+      lugar: "La Gran Plaza",
+      hora: "11:45",
+      /** Foto en public/granplaza.jpg */
+      imageSrc: "/granplaza.jpg",
+      mapsQuery: "La Gran Plaza, San José de la Rinconada, Sevilla, España",
+    },
+    vuelta: [
+      { label: "Primera salida", hora: "20:00" },
+      { label: "Segunda salida", hora: "23:00" },
     ],
   },
   viajeros: {

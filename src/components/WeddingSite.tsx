@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import {
+  Bus,
   Calendar,
   Camera,
   Clock,
@@ -25,6 +26,7 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { HistoriaStory } from "@/components/HistoriaStory";
 import { AdminSeating } from "@/components/AdminSeating";
+import { BackgroundMusic } from "@/components/BackgroundMusic";
 import { SpotifyIcon } from "@/components/SpotifyIcon";
 import { compressImageFile } from "@/lib/compress-image";
 import { weddingConfig } from "@/lib/wedding-config";
@@ -34,6 +36,7 @@ type TabId =
   | "story"
   | "day"
   | "rsvp"
+  | "bus"
   | "travel"
   | "music"
   | "photos"
@@ -88,6 +91,7 @@ const tabs: { id: TabId; label: string }[] = [
   { id: "story", label: "Historia" },
   { id: "day", label: "Gran día" },
   { id: "rsvp", label: "Asistencia" },
+  { id: "bus", label: "Autobús" },
   { id: "travel", label: "Viajeros" },
   { id: "music", label: "Música" },
   { id: "photos", label: "Fotos" },
@@ -391,6 +395,7 @@ export function WeddingSite() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F2F5F0] pb-16 font-sans text-[#2F3530]">
+      <BackgroundMusic active={tab !== "admin"} />
       <nav className="sticky top-0 z-20 border-b border-[#2F3530]/10 bg-[#F2F5F0]/95 backdrop-blur-sm">
         <div className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div
@@ -784,6 +789,91 @@ export function WeddingSite() {
                 </p>
               ) : null}
             </form>
+          </section>
+        ) : null}
+
+        {tab === "bus" ? (
+          <section className="pb-16">
+            <SectionHeading
+              title="Autobús"
+              subtitle={weddingConfig.autobus.subtitle}
+            />
+
+            <article className="overflow-hidden rounded-2xl bg-white shadow-md shadow-[#2F3530]/10">
+              <div className="relative aspect-[21/9] bg-[#DDE5DA]">
+                {weddingConfig.autobus.salida.imageSrc ? (
+                  <Image
+                    src={weddingConfig.autobus.salida.imageSrc}
+                    alt={`Punto de salida — ${weddingConfig.autobus.salida.lugar}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 1024px"
+                  />
+                ) : (
+                  <div className="flex size-full items-center justify-center">
+                    <div className="text-center">
+                      <Camera className="mx-auto size-8 text-[#FAFCF9]" strokeWidth={1.25} />
+                      <p className="mt-2 font-serif text-lg italic text-[#FAFCF9]/95">
+                        foto de la gran plaza
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-6 px-6 py-7">
+                <div className="flex items-start gap-4 rounded-xl bg-[#F2F5F0] p-5">
+                  <Bus className="mt-0.5 size-6 shrink-0 text-[#8A9B82]" strokeWidth={1.25} />
+                  <div>
+                    <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+                      Ida
+                    </p>
+                    <p className="mt-1 font-serif text-xl text-[#2F3530]">
+                      Salida desde {weddingConfig.autobus.salida.lugar}
+                    </p>
+                    <p className="mt-2 font-sans text-sm text-[#2F3530]/85">
+                      Hora de salida:{" "}
+                      <span className="font-semibold text-[#2F3530]">
+                        {weddingConfig.autobus.salida.hora}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+                    Vuelta
+                  </p>
+                  <ul className="mt-3 divide-y divide-[#2F3530]/10 rounded-xl border border-[#2F3530]/10">
+                    {weddingConfig.autobus.vuelta.map((tramo) => (
+                      <li
+                        key={tramo.label}
+                        className="flex items-center justify-between gap-4 px-4 py-3.5"
+                      >
+                        <span className="font-sans text-sm text-[#2F3530]/85">
+                          {tramo.label}
+                        </span>
+                        <span className="font-serif text-lg tabular-nums text-[#2F3530]">
+                          {tramo.hora}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(weddingConfig.autobus.salida.mapsQuery)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 flex flex-col items-center justify-center rounded-xl bg-[#E3EAE0] px-6 py-10 text-center transition-colors hover:bg-[#D5DDD1]"
+            >
+              <MapPin className="mb-2 size-8 text-[#8A9B82]" strokeWidth={1.25} />
+              <span className="font-sans text-sm text-[#2F3530]/75">
+                Google Maps · {weddingConfig.autobus.salida.lugar}
+              </span>
+            </a>
           </section>
         ) : null}
 
