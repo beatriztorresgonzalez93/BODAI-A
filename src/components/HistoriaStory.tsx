@@ -68,8 +68,8 @@ function HistoriaPhoto({
       className="mx-auto w-full"
       style={tilt !== undefined ? { transform: `rotate(${tilt}deg)` } : undefined}
     >
-      <div className="overflow-hidden rounded-xl bg-white p-2 shadow-md shadow-[#2F3530]/10">
-        <div className="overflow-hidden rounded-lg bg-[#E8EDE5]">
+      <div className="overflow-hidden rounded-xl bg-white p-2 shadow-md shadow-[#3D322E]/10">
+        <div className="overflow-hidden rounded-lg bg-[#F8E8DC]">
           <Image
             src={src}
             alt={alt}
@@ -82,7 +82,7 @@ function HistoriaPhoto({
         </div>
       </div>
       {showCaption && alt ? (
-        <figcaption className="mt-3 text-center font-serif text-sm text-[#2F3530]/45 italic">
+        <figcaption className="mt-3 text-center font-serif text-sm text-[#3D322E]/45 italic">
           {alt}
         </figcaption>
       ) : null}
@@ -100,22 +100,22 @@ export function HistoriaStory({ blocks }: { blocks: HistoriaBlock[] }) {
           return (
             <div
               key={`prose-${gi}`}
-              className="space-y-5 rounded-3xl border border-[#8A9B82]/12 bg-[#FAFCF9]/65 px-6 py-7 shadow-[0_4px_28px_-6px_rgba(47,53,48,0.07)] sm:px-8"
+              className="space-y-5 rounded-3xl border border-[#D4845F]/12 bg-[#FFFBF7]/65 px-6 py-7 shadow-[0_4px_28px_-6px_rgba(47,53,48,0.07)] sm:px-8"
             >
               {group.paragraphs.map((p, pi) =>
                 isPullQuote(p) ? (
                   <p
                     key={`pq-${gi}-${pi}`}
-                    className="py-1 text-center font-serif text-xl leading-snug tracking-tight text-[#8A9B82] italic sm:text-2xl"
+                    className="py-1 text-center font-serif text-xl leading-snug tracking-tight text-[#D4845F] italic sm:text-2xl"
                   >
                     {p}
                   </p>
                 ) : (
                   <p
                     key={`p-${gi}-${pi}`}
-                    className={`text-justify font-sans text-[15px] leading-[1.9] text-[#2F3530]/78 ${
+                    className={`text-justify font-sans text-[15px] leading-[1.9] text-[#3D322E]/78 ${
                       pi === 0
-                        ? "first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:font-serif first-letter:text-4xl first-letter:leading-none first-letter:text-[#8A9B82]"
+                        ? "first-letter:float-left first-letter:mr-2 first-letter:mt-0.5 first-letter:font-serif first-letter:text-4xl first-letter:leading-none first-letter:text-[#D4845F]"
                         : ""
                     }`}
                   >
@@ -159,9 +159,9 @@ export function HistoriaStory({ blocks }: { blocks: HistoriaBlock[] }) {
       })}
 
       <div className="flex items-center justify-center gap-3 pt-2" aria-hidden>
-        <span className="h-px w-16 bg-[#8A9B82]/40" />
-        <span className="font-serif text-lg text-[#8A9B82]">&</span>
-        <span className="h-px w-16 bg-[#8A9B82]/40" />
+        <span className="h-px w-16 bg-[#D4845F]/40" />
+        <span className="font-serif text-lg text-[#D4845F]">&</span>
+        <span className="h-px w-16 bg-[#D4845F]/40" />
       </div>
     </div>
   );

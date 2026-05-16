@@ -4,19 +4,19 @@ export type HistoriaBlock =
   | { type: "image"; src: string; alt?: string };
 
 export const weddingConfig = {
-  coupleLine: "Inmaculada & Alejandro",
+  coupleLine: "Adriana & David",
   headline: "NOS CASAMOS",
-  /** Foto principal en public/portada4.jpg */
-  coverImageSrc: "/portada6.jpeg",
-  /** Punto focal en móvil (object-position): novios abajo-derecha */
-  coverImageMobileFocus: "90% 74%",
+  /** Foto principal de portada */
+  coverImageSrc: "/portadamanos.jpg",
+  /** Punto focal en móvil (object-position) */
+  coverImageMobileFocus: "50% 45%",
   dateLine: "SÁBADO · 5 DE DICIEMBRE DE 2026 · SEVILLA",
   /** Hora de referencia para la cuenta atrás (CET); cambia si ya tienes horario cerrado */
   countdownTarget: "2026-12-05T17:30:00+01:00",
   rsvpDeadlineLine: "ANTES DEL 1 DE OCTUBRE DE 2026",
   /** Música de fondo en public/ (mp3). volume: 0–1 dentro de la web (no sustituye el volumen del móvil/PC). */
   backgroundMusic: {
-    src: "/musica-fondo.mp3",
+    src: "",
     volume: 0.25,
   },
   granDia: {
@@ -61,7 +61,7 @@ export const weddingConfig = {
       address:
         "Polígono Industrial El Malecón, C. el Malecón, 100, 41300 San José de la Rinconada, Sevilla",
       phone: "+34 955 793 127",
-      rateNote: 'Menciona "Boda Inmacula y Alejandro"',
+      rateNote: 'Menciona "Boda Adriana y David"',
       distance: "Dos minutos a pie del lugar de la celebración",
       mapsQuery:
         "Hotel Torre del Oro, C. el Malecón 100, San José de la Rinconada, Sevilla",

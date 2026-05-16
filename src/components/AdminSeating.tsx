@@ -273,20 +273,20 @@ export function AdminSeating() {
     : null;
 
   return (
-    <article className="w-full rounded-2xl bg-white p-5 shadow-sm shadow-[#2F3530]/10 sm:p-7">
+    <article className="w-full rounded-2xl bg-white p-5 shadow-sm shadow-[#3D322E]/10 sm:p-7">
       <SeatingHeader />
 
       <SeatingStatsBar stats={data?.stats} loading={loading} />
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        <div className="inline-flex rounded-lg border border-[#2F3530]/15 p-0.5">
+        <div className="inline-flex rounded-lg border border-[#3D322E]/15 p-0.5">
           <button
             type="button"
             onClick={() => setViewMode("plan")}
             className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] ${
               viewMode === "plan"
-                ? "bg-[#E6ECE3] text-[#2F3530]"
-                : "text-[#2F3530]/60 hover:text-[#2F3530]"
+                ? "bg-[#E6ECE3] text-[#3D322E]"
+                : "text-[#3D322E]/60 hover:text-[#3D322E]"
             }`}
           >
             <LayoutGrid className="size-3.5" />
@@ -297,8 +297,8 @@ export function AdminSeating() {
             onClick={() => setViewMode("list")}
             className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] ${
               viewMode === "list"
-                ? "bg-[#E6ECE3] text-[#2F3530]"
-                : "text-[#2F3530]/60 hover:text-[#2F3530]"
+                ? "bg-[#E6ECE3] text-[#3D322E]"
+                : "text-[#3D322E]/60 hover:text-[#3D322E]"
             }`}
           >
             <List className="size-3.5" />
@@ -309,7 +309,7 @@ export function AdminSeating() {
         <button
           type="button"
           onClick={() => void createTables(1)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#8A9B82]/50 bg-[#F0F4EE] px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[#2F3530] hover:bg-[#E6ECE3]"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#D4845F]/50 bg-[#FFF0E6] px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[#3D322E] hover:bg-[#E6ECE3]"
         >
           <Plus className="size-3.5" />
           Mesa
@@ -317,14 +317,14 @@ export function AdminSeating() {
         <button
           type="button"
           onClick={() => void createTables(5)}
-          className="rounded-lg border border-[#2F3530]/20 px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[#2F3530]/75 hover:bg-[#FAFCF9]"
+          className="rounded-lg border border-[#3D322E]/20 px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[#3D322E]/75 hover:bg-[#FFFBF7]"
         >
           +5 mesas
         </button>
         <button
           type="button"
           onClick={() => void loadSeating()}
-          className="ml-auto rounded-lg border border-[#2F3530]/20 px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[#2F3530]/75 hover:bg-[#FAFCF9]"
+          className="ml-auto rounded-lg border border-[#3D322E]/20 px-3 py-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[#3D322E]/75 hover:bg-[#FFFBF7]"
         >
           Actualizar
         </button>
@@ -332,17 +332,17 @@ export function AdminSeating() {
 
       {status ? (
         <p
-          className={`mt-3 text-sm ${status.kind === "success" ? "text-green-800" : "text-red-700"}`}
+          className={`mt-3 text-sm ${status.kind === "success" ? "text-[#8B5A42]" : "text-red-700"}`}
         >
           {status.message}
         </p>
       ) : null}
 
       {selectedGuest ? (
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-[#8A9B82]/40 bg-[#F0F4EE] px-4 py-3 text-sm">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-[#D4845F]/40 bg-[#FFF0E6] px-4 py-3 text-sm">
           <p>
             <span className="font-semibold">{selectedGuest.name}</span>
-            <span className="text-[#2F3530]/65"> — clic en una silla libre del plano</span>
+            <span className="text-[#3D322E]/65"> — clic en una silla libre del plano</span>
           </p>
           <button
             type="button"
@@ -397,7 +397,7 @@ function SeatingHeader() {
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
         <h3 className="font-serif text-2xl">Seating</h3>
-        <p className="mt-1 text-sm text-[#2F3530]/60">
+        <p className="mt-1 text-sm text-[#3D322E]/60">
           Plano del salón y asignación de invitados confirmados
         </p>
       </div>
@@ -407,7 +407,7 @@ function SeatingHeader() {
 
 function SeatingStatsBar({ stats, loading }: { stats?: SeatingStats; loading: boolean }) {
   if (loading) {
-    return <p className="mt-4 text-sm text-[#2F3530]/55">Cargando seating…</p>;
+    return <p className="mt-4 text-sm text-[#3D322E]/55">Cargando seating…</p>;
   }
   if (!stats) return null;
   return (
@@ -422,10 +422,10 @@ function SeatingStatsBar({ stats, loading }: { stats?: SeatingStats; loading: bo
       ].map((item) => (
         <div
           key={item.label}
-          className="rounded-xl border border-[#2F3530]/10 bg-[#FAFCF9] px-3 py-2.5 text-center"
+          className="rounded-xl border border-[#3D322E]/10 bg-[#FFFBF7] px-3 py-2.5 text-center"
         >
-          <p className="font-serif text-xl tabular-nums text-[#2F3530]">{item.value}</p>
-          <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
+          <p className="font-serif text-xl tabular-nums text-[#3D322E]">{item.value}</p>
+          <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#D4845F]">
             {item.label}
           </p>
         </div>
@@ -483,13 +483,13 @@ function SeatingPlanView(props: PlanProps) {
 
   return (
     <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_280px]">
-      <div className="min-w-0 overflow-x-auto rounded-xl border border-[#2F3530]/12 bg-[#F4F6F2]">
+      <div className="min-w-0 overflow-x-auto rounded-xl border border-[#3D322E]/12 bg-[#F4F6F2]">
         {loading ? (
-          <p className="p-8 text-center text-sm text-[#2F3530]/55">Cargando plano…</p>
+          <p className="p-8 text-center text-sm text-[#3D322E]/55">Cargando plano…</p>
         ) : tables.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-            <Armchair className="size-10 text-[#8A9B82]/60" strokeWidth={1.25} />
-            <p className="text-sm text-[#2F3530]/65">
+            <Armchair className="size-10 text-[#D4845F]/60" strokeWidth={1.25} />
+            <p className="text-sm text-[#3D322E]/65">
               Aún no hay mesas. Crea la primera para empezar el plano.
             </p>
           </div>
@@ -517,7 +517,7 @@ function SeatingPlanView(props: PlanProps) {
               x={FLOOR_WIDTH / 2}
               y={28}
               textAnchor="middle"
-              className="fill-[#8A9B82] text-[11px] font-semibold uppercase tracking-[0.2em]"
+              className="fill-[#D4845F] text-[11px] font-semibold uppercase tracking-[0.2em]"
               style={{ fontFamily: "system-ui, sans-serif" }}
             >
               Salón
@@ -548,7 +548,7 @@ function SeatingPlanView(props: PlanProps) {
                       height={80}
                       rx={8}
                       fill={isSelected ? "#DDE6D8" : "#FFFFFF"}
-                      stroke={isSelected ? "#8A9B82" : "#B8C4B0"}
+                      stroke={isSelected ? "#D4845F" : "#B8C4B0"}
                       strokeWidth={isSelected ? 2.5 : 1.5}
                     />
                   ) : (
@@ -557,7 +557,7 @@ function SeatingPlanView(props: PlanProps) {
                       cy={table.y}
                       r={tableR}
                       fill={isSelected ? "#DDE6D8" : "#FFFFFF"}
-                      stroke={isSelected ? "#8A9B82" : "#B8C4B0"}
+                      stroke={isSelected ? "#D4845F" : "#B8C4B0"}
                       strokeWidth={isSelected ? 2.5 : 1.5}
                     />
                   )}
@@ -566,7 +566,7 @@ function SeatingPlanView(props: PlanProps) {
                     x={table.x}
                     y={table.y - 6}
                     textAnchor="middle"
-                    className="fill-[#2F3530] text-[11px] font-semibold pointer-events-none"
+                    className="fill-[#3D322E] text-[11px] font-semibold pointer-events-none"
                     style={{ fontFamily: "Georgia, serif" }}
                   >
                     {table.name}
@@ -575,7 +575,7 @@ function SeatingPlanView(props: PlanProps) {
                     x={table.x}
                     y={table.y + 10}
                     textAnchor="middle"
-                    className="fill-[#8A9B82] text-[9px] font-medium pointer-events-none"
+                    className="fill-[#D4845F] text-[9px] font-medium pointer-events-none"
                     style={{ fontFamily: "system-ui, sans-serif" }}
                   >
                     {occupied}/{table.capacity}
@@ -603,7 +603,7 @@ function SeatingPlanView(props: PlanProps) {
                           r={14}
                           fill={
                             occupiedSeat
-                              ? "#8A9B82"
+                              ? "#D4845F"
                               : canAssign
                                 ? "#C5D4BC"
                                 : "#FFFFFF"
@@ -616,7 +616,7 @@ function SeatingPlanView(props: PlanProps) {
                           y={seat.y + 3.5}
                           textAnchor="middle"
                           className={`pointer-events-none text-[8px] font-semibold ${
-                            occupiedSeat ? "fill-white" : "fill-[#2F3530]/70"
+                            occupiedSeat ? "fill-white" : "fill-[#3D322E]/70"
                           }`}
                           style={{ fontFamily: "system-ui, sans-serif" }}
                         >
@@ -641,9 +641,9 @@ function SeatingPlanView(props: PlanProps) {
 
       <aside className="flex flex-col gap-4">
         {selectedTable ? (
-          <div className="rounded-xl border border-[#8A9B82]/35 bg-[#FAFCF9] p-4">
+          <div className="rounded-xl border border-[#D4845F]/35 bg-[#FFFBF7] p-4">
             <div className="flex items-start justify-between gap-2">
-              <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8A9B82]">
+              <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-[#D4845F]">
                 Mesa seleccionada
               </p>
               <button
@@ -656,7 +656,7 @@ function SeatingPlanView(props: PlanProps) {
               </button>
             </div>
             <label className="mt-3 block">
-              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#D4845F]">
                 Nombre
               </span>
               <input
@@ -666,11 +666,11 @@ function SeatingPlanView(props: PlanProps) {
                   const v = e.target.value.trim();
                   if (v && v !== selectedTable.name) void updateTable(selectedTable.id, { name: v });
                 }}
-                className="mt-1 w-full rounded-lg border border-[#2F3530]/15 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8A9B82]/40"
+                className="mt-1 w-full rounded-lg border border-[#3D322E]/15 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#D4845F]/40"
               />
             </label>
             <div className="mt-3 flex items-center gap-2">
-              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#D4845F]">
                 Plazas
               </span>
               <button
@@ -680,7 +680,7 @@ function SeatingPlanView(props: PlanProps) {
                     capacity: Math.max(1, selectedTable.capacity - 1),
                   })
                 }
-                className="inline-flex size-8 items-center justify-center rounded-md border border-[#2F3530]/15"
+                className="inline-flex size-8 items-center justify-center rounded-md border border-[#3D322E]/15"
               >
                 <Minus className="size-3.5" />
               </button>
@@ -694,7 +694,7 @@ function SeatingPlanView(props: PlanProps) {
                     capacity: Math.min(20, selectedTable.capacity + 1),
                   })
                 }
-                className="inline-flex size-8 items-center justify-center rounded-md border border-[#2F3530]/15"
+                className="inline-flex size-8 items-center justify-center rounded-md border border-[#3D322E]/15"
               >
                 <Plus className="size-3.5" />
               </button>
@@ -707,7 +707,7 @@ function SeatingPlanView(props: PlanProps) {
                     shape: selectedTable.shape === "round" ? "rect" : "round",
                   })
                 }
-                className="flex-1 rounded-lg border border-[#2F3530]/20 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
+                className="flex-1 rounded-lg border border-[#3D322E]/20 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
               >
                 {selectedTable.shape === "round" ? "Rectangular" : "Redonda"}
               </button>
@@ -720,26 +720,26 @@ function SeatingPlanView(props: PlanProps) {
                 <Trash2 className="size-4" />
               </button>
             </div>
-            <p className="mt-2 text-xs text-[#2F3530]/50">Arrastra la mesa en el plano para moverla.</p>
+            <p className="mt-2 text-xs text-[#3D322E]/50">Arrastra la mesa en el plano para moverla.</p>
           </div>
         ) : null}
 
         <div>
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8A9B82]" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#D4845F]" />
             <input
               value={guestSearch}
               onChange={(e) => setGuestSearch(e.target.value)}
               placeholder="Buscar invitado…"
-              className="w-full rounded-lg border border-[#2F3530]/15 py-2.5 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-[#8A9B82]/40"
+              className="w-full rounded-lg border border-[#3D322E]/15 py-2.5 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-[#D4845F]/40"
             />
           </div>
-          <p className="mt-3 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8A9B82]">
+          <p className="mt-3 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-[#D4845F]">
             Sin asignar ({filteredUnassigned.length})
           </p>
           <ul className="mt-2 max-h-[420px] space-y-1.5 overflow-y-auto">
             {filteredUnassigned.length === 0 ? (
-              <li className="py-4 text-center text-sm text-[#2F3530]/50">
+              <li className="py-4 text-center text-sm text-[#3D322E]/50">
                 {guestSearch ? "Sin resultados." : "Todos los confirmados tienen mesa."}
               </li>
             ) : (
@@ -754,24 +754,24 @@ function SeatingPlanView(props: PlanProps) {
                     }
                     className={`w-full rounded-lg border px-3 py-2.5 text-left text-sm transition-colors ${
                       selectedGuestKey === guest.guestKey
-                        ? "border-[#8A9B82] bg-[#E6ECE3]"
-                        : "border-[#2F3530]/10 bg-white hover:border-[#8A9B82]/40"
+                        ? "border-[#D4845F] bg-[#E6ECE3]"
+                        : "border-[#3D322E]/10 bg-white hover:border-[#D4845F]/40"
                     }`}
                   >
-                    <p className="font-medium text-[#2F3530]">{guest.name}</p>
-                    <p className="mt-0.5 text-xs text-[#2F3530]/55">
+                    <p className="font-medium text-[#3D322E]">{guest.name}</p>
+                    <p className="mt-0.5 text-xs text-[#3D322E]/55">
                       RSVP: {guest.partyLead}
                       {guest.allergies ? ` · ${guest.allergies}` : ""}
                     </p>
                     {(guest.isChild || guest.kidsMenu) && (
                       <div className="mt-1 flex flex-wrap gap-1">
                         {guest.isChild ? (
-                          <span className="rounded bg-[#E3EAE0] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#2F3530]/70">
+                          <span className="rounded bg-[#F0E4DC] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#3D322E]/70">
                             Niño/a
                           </span>
                         ) : null}
                         {guest.kidsMenu ? (
-                          <span className="rounded bg-[#E6ECE3] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#2F3530]/70">
+                          <span className="rounded bg-[#E6ECE3] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#3D322E]/70">
                             Menú infantil
                           </span>
                         ) : null}
@@ -782,7 +782,7 @@ function SeatingPlanView(props: PlanProps) {
               ))
             )}
           </ul>
-          <p className="mt-3 text-xs text-[#2F3530]/50">
+          <p className="mt-3 text-xs text-[#3D322E]/50">
             Selecciona un invitado y haz clic en una silla libre. Clic en silla ocupada para liberarla.
           </p>
         </div>
@@ -813,49 +813,49 @@ function SeatingListView({
   return (
     <div className="mt-5 space-y-6">
       <div className="relative max-w-md">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8A9B82]" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#D4845F]" />
         <input
           value={listSearch}
           onChange={(e) => setListSearch(e.target.value)}
           placeholder="Buscar en la lista…"
-          className="w-full rounded-lg border border-[#2F3530]/15 py-2.5 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-[#8A9B82]/40"
+          className="w-full rounded-lg border border-[#3D322E]/15 py-2.5 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-[#D4845F]/40"
         />
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[680px] border-separate border-spacing-0 text-left text-sm">
-          <thead className="text-[#8A9B82]">
+          <thead className="text-[#D4845F]">
             <tr>
-              <th className="border-b border-[#2F3530]/10 py-3 pr-4 font-semibold">Mesa</th>
-              <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">Silla</th>
-              <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">Invitado</th>
-              <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">RSVP</th>
-              <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">Alergias</th>
-              <th className="border-b border-[#2F3530]/10 py-3 pl-4 font-semibold">Acciones</th>
+              <th className="border-b border-[#3D322E]/10 py-3 pr-4 font-semibold">Mesa</th>
+              <th className="border-b border-[#3D322E]/10 py-3 px-4 font-semibold">Silla</th>
+              <th className="border-b border-[#3D322E]/10 py-3 px-4 font-semibold">Invitado</th>
+              <th className="border-b border-[#3D322E]/10 py-3 px-4 font-semibold">RSVP</th>
+              <th className="border-b border-[#3D322E]/10 py-3 px-4 font-semibold">Alergias</th>
+              <th className="border-b border-[#3D322E]/10 py-3 pl-4 font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {listRows.map((row) => (
               <tr key={row.id} className="align-top">
-                <td className="border-b border-[#2F3530]/8 py-3 pr-4 font-medium">{row.tableName}</td>
-                <td className="border-b border-[#2F3530]/8 py-3 px-4 tabular-nums">{row.seatIndex + 1}</td>
-                <td className="border-b border-[#2F3530]/8 py-3 px-4">
+                <td className="border-b border-[#3D322E]/8 py-3 pr-4 font-medium">{row.tableName}</td>
+                <td className="border-b border-[#3D322E]/8 py-3 px-4 tabular-nums">{row.seatIndex + 1}</td>
+                <td className="border-b border-[#3D322E]/8 py-3 px-4">
                   <p>{row.guestName}</p>
                   {(row.isChild || row.kidsMenu) && (
-                    <p className="mt-1 text-xs text-[#2F3530]/55">
+                    <p className="mt-1 text-xs text-[#3D322E]/55">
                       {[row.isChild ? "Niño/a" : null, row.kidsMenu ? "Menú infantil" : null]
                         .filter(Boolean)
                         .join(" · ")}
                     </p>
                   )}
                 </td>
-                <td className="border-b border-[#2F3530]/8 py-3 px-4 text-[#2F3530]/80">{row.partyLead}</td>
-                <td className="border-b border-[#2F3530]/8 py-3 px-4">{row.allergies || "—"}</td>
-                <td className="border-b border-[#2F3530]/8 py-3 pl-4">
+                <td className="border-b border-[#3D322E]/8 py-3 px-4 text-[#3D322E]/80">{row.partyLead}</td>
+                <td className="border-b border-[#3D322E]/8 py-3 px-4">{row.allergies || "—"}</td>
+                <td className="border-b border-[#3D322E]/8 py-3 pl-4">
                   <button
                     type="button"
                     onClick={() => void onUnassign(row.guestKey)}
-                    className="inline-flex items-center gap-1 rounded-md border border-[#2F3530]/20 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] hover:bg-[#FAFCF9]"
+                    className="inline-flex items-center gap-1 rounded-md border border-[#3D322E]/20 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] hover:bg-[#FFFBF7]"
                   >
                     <UserMinus className="size-3.5" />
                     Quitar
@@ -866,7 +866,7 @@ function SeatingListView({
           </tbody>
         </table>
         {listRows.length === 0 ? (
-          <p className="py-6 text-sm text-[#2F3530]/55">Nadie sentado todavía.</p>
+          <p className="py-6 text-sm text-[#3D322E]/55">Nadie sentado todavía.</p>
         ) : null}
       </div>
 
@@ -882,7 +882,7 @@ function SeatingListView({
                     setSelectedGuestKey(g.guestKey);
                     setViewMode("plan");
                   }}
-                  className="rounded-full border border-[#2F3530]/15 bg-[#FAFCF9] px-3 py-1.5 text-sm hover:border-[#8A9B82]/50"
+                  className="rounded-full border border-[#3D322E]/15 bg-[#FFFBF7] px-3 py-1.5 text-sm hover:border-[#D4845F]/50"
                 >
                   {g.name}
                 </button>

@@ -94,7 +94,7 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
         <button
           type="button"
           onClick={toggleMute}
-          className="fixed bottom-5 right-5 z-30 flex size-11 items-center justify-center rounded-full border border-[#2F3530]/15 bg-[#F2F5F0]/95 text-[#2F3530] shadow-md backdrop-blur-sm transition-colors hover:border-[#8A9B82]/40 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A9B82]"
+          className="fixed bottom-5 right-5 z-30 flex size-11 items-center justify-center rounded-full border border-[#3D322E]/15 bg-[#FFF6F0]/95 text-[#3D322E] shadow-md backdrop-blur-sm transition-colors hover:border-[#D4845F]/40 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4845F]"
           aria-pressed={muted}
           aria-label={
             muted

@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F2F5F0;
-  --foreground: #2F3530;
+  --background: #fff6f0;
+  --foreground: #3d322e;
+  --wedding-accent: #d4845f;
+  --wedding-accent-soft: #f0c9b0;
+  --wedding-surface: #fffbf7;
+  --wedding-surface-2: #fff0e6;
+  --wedding-muted: #f0e4dc;
 }
 
 @theme inline {
