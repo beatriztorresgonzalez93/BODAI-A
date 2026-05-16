@@ -18,6 +18,8 @@ export const weddingConfig = {
   backgroundMusic: {
     src: "/musica-fondo.mp3",
     volume: 0.25,
+    /** Salta silencio inicial del MP3 (segundos). 0 si la pista empieza al instante. */
+    startAtSeconds: 8,
   },
   granDia: {
     fecha: "5 diciembre 2026",

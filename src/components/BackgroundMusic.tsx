@@ -15,35 +15,71 @@ function readMutedPreference(): boolean {
   }
 }
 
+function applyMusicStartOffset(audio: HTMLAudioElement, startAt: number) {
+  if (startAt <= 0) return;
+  if (audio.currentTime < startAt) {
+    audio.currentTime = startAt;
+  }
+}
+
+async function tryPlayBackgroundAudio(
+  audio: HTMLAudioElement,
+  startAt: number,
+  playLevel: number,
+): Promise<boolean> {
+  applyMusicStartOffset(audio, startAt);
+  audio.volume = playLevel;
+
+  if (!audio.paused) return true;
+
+  try {
+    await audio.play();
+    return true;
+  } catch {
+    /* Autoplay con sonido bloqueado */
+  }
+
+  try {
+    audio.muted = true;
+    await audio.play();
+    audio.muted = false;
+    audio.volume = playLevel;
+    applyMusicStartOffset(audio, startAt);
+    return !audio.paused;
+  } catch {
+    audio.muted = false;
+    audio.pause();
+    return false;
+  }
+}
+
 type BackgroundMusicProps = {
   /** false en pestaña Área novios: pausa y oculta el control */
   active: boolean;
 };
 
 export function BackgroundMusic({ active }: BackgroundMusicProps) {
-  const { src, volume } = weddingConfig.backgroundMusic;
+  const { src, volume, startAtSeconds = 0 } = weddingConfig.backgroundMusic;
+  const startAt = Math.max(0, startAtSeconds);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [muted, setMuted] = useState(false);
   const [hydrated, setHydrated] = useState(false);
-  const [awaitingGesture, setAwaitingGesture] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
 
   const playLevel = Math.min(0.25, Math.max(0, volume));
+  const useNativeLoop = startAt <= 0;
 
-  const syncPlayback = useCallback(async () => {
+  const startPlayback = useCallback(async () => {
     const audio = audioRef.current;
-    if (!audio || !src) return;
-    audio.volume = playLevel;
+    if (!audio || !src) return false;
     if (!active || muted) {
       audio.pause();
-      return;
+      return false;
     }
-    try {
-      await audio.play();
-      setAwaitingGesture(false);
-    } catch {
-      setAwaitingGesture(true);
-    }
-  }, [active, muted, playLevel, src]);
+    const ok = await tryPlayBackgroundAudio(audio, startAt, playLevel);
+    setNeedsTap(!ok);
+    return ok;
+  }, [active, muted, playLevel, src, startAt]);
 
   useEffect(() => {
     setMuted(readMutedPreference());
@@ -52,36 +88,80 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
 
   useEffect(() => {
     if (!hydrated) return;
-    void syncPlayback();
-  }, [hydrated, syncPlayback]);
+    void startPlayback();
+  }, [hydrated, startPlayback]);
 
   useEffect(() => {
     if (!hydrated || !active || muted || !src) return;
 
-    const unlock = () => {
-      void syncPlayback();
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    let cancelled = false;
+    const attempt = () => {
+      if (cancelled || muted || !active) return;
+      void startPlayback();
     };
 
-    document.addEventListener("pointerdown", unlock, { once: true });
-    document.addEventListener("keydown", unlock, { once: true });
+    attempt();
+    const timers = [80, 300, 800].map((ms) => setTimeout(attempt, ms));
+    audio.addEventListener("canplay", attempt);
+    audio.addEventListener("loadeddata", attempt);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") attempt();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
-      document.removeEventListener("pointerdown", unlock);
-      document.removeEventListener("keydown", unlock);
+      cancelled = true;
+      timers.forEach(clearTimeout);
+      audio.removeEventListener("canplay", attempt);
+      audio.removeEventListener("loadeddata", attempt);
+      document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [hydrated, active, muted, src, syncPlayback]);
+  }, [hydrated, active, muted, src, startPlayback]);
 
-  function toggleMute() {
-    const next = !muted;
-    setMuted(next);
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || startAt <= 0) return;
+
+    const onEnded = () => {
+      audio.currentTime = startAt;
+      if (!muted && active) void tryPlayBackgroundAudio(audio, startAt, playLevel);
+    };
+
+    audio.addEventListener("ended", onEnded);
+    return () => audio.removeEventListener("ended", onEnded);
+  }, [startAt, muted, active, playLevel]);
+
+  function handleControlClick() {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (muted) {
+      setMuted(false);
+      try {
+        window.localStorage.setItem(MUTE_STORAGE_KEY, "0");
+      } catch {
+        /* ignore */
+      }
+      void startPlayback();
+      return;
+    }
+
+    if (needsTap || audio.paused) {
+      void startPlayback();
+      return;
+    }
+
+    setMuted(true);
+    setNeedsTap(false);
+    audio.pause();
     try {
-      window.localStorage.setItem(MUTE_STORAGE_KEY, next ? "1" : "0");
+      window.localStorage.setItem(MUTE_STORAGE_KEY, "1");
     } catch {
       /* ignore */
-    }
-    if (next) {
-      audioRef.current?.pause();
-    } else {
-      void syncPlayback();
     }
   }
 
@@ -89,24 +169,32 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
 
   return (
     <>
-      <audio ref={audioRef} src={src} loop preload="auto" aria-hidden />
+      <audio
+        ref={audioRef}
+        src={src}
+        autoPlay
+        loop={useNativeLoop}
+        preload="auto"
+        playsInline
+        aria-hidden
+      />
       {active ? (
         <button
           type="button"
-          onClick={toggleMute}
+          onClick={handleControlClick}
           className="fixed bottom-5 right-5 z-30 flex size-11 items-center justify-center rounded-full border border-[#2F3530]/15 bg-[#F2F5F0]/95 text-[#2F3530] shadow-md backdrop-blur-sm transition-colors hover:border-[#8A9B82]/40 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A9B82]"
           aria-pressed={muted}
           aria-label={
             muted
               ? "Activar música de fondo"
-              : awaitingGesture
+              : needsTap
                 ? "Reproducir música de fondo"
                 : "Silenciar música de fondo"
           }
           title={
             muted
               ? "Activar música"
-              : awaitingGesture
+              : needsTap
                 ? "Pulsa para escuchar la música"
                 : "Silenciar música"
           }
