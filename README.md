@@ -86,8 +86,17 @@ Otros scripts: `npm run build`, `npm run start`, `npm run lint`.
 ## Despliegue (p. ej. Vercel)
 
 1. Repositorio en GitHub y proyecto importado en Vercel.
-2. Mismas variables de entorno que en local (`MONGODB_*`, `ADMIN_*`, `ADMIN_SESSION_SECRET` y, si aplica, Cloudinary).
-3. No subas `.env` al repositorio; usa los secretos del panel del hosting.
+2. **Settings → Environment Variables**: copia **las mismas** que en tu `.env` local y actívalas en **Production** y **Preview** (si despliegas la rama `version-empresa`, usa Preview o Production según el dominio que compartas):
+   - `MONGODB_URI`
+   - `MONGODB_DB_NAME`
+   - `ADMIN_USER`
+   - `ADMIN_PASSWORD` (o `ADMIN_PASSWORD_HASH`)
+   - `ADMIN_SESSION_SECRET`
+   - (Recomendado para fotos) `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+3. Tras añadir variables, haz **Redeploy** (Deployments → ⋯ → Redeploy).
+4. En **MongoDB Atlas → Network Access**, permite **`0.0.0.0/0`** (o Vercel no podrá conectar y verás error 500 en `/api/songs`, `/api/photos`, seating, etc.).
+5. Diagnóstico: abre `https://tu-dominio.vercel.app/api/health` — debe devolver `"ok": true`. Si `dbError` aparece, revisa URI y Atlas.
+6. No subas `.env` al repositorio; usa los secretos del panel del hosting.
 
 ## Contraseña del panel en hash (opcional)
 

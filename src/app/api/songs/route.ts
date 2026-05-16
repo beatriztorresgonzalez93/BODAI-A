@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { parseSongLine } from "@/lib/parse-song-line";
 
+export const runtime = "nodejs";
+
 type SongPayload = {
   guestName?: string;
   songTitleArtist?: string;
