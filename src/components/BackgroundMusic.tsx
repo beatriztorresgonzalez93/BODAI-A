@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { weddingConfig } from "@/lib/wedding-config";
 
 const MUTE_STORAGE_KEY = "wedding-bg-music-muted";
+const UNLOCK_STORAGE_KEY = "wedding-audio-unlocked";
 
 function readMutedPreference(): boolean {
   if (typeof window === "undefined") return false;
@@ -12,6 +13,23 @@ function readMutedPreference(): boolean {
     return window.localStorage.getItem(MUTE_STORAGE_KEY) === "1";
   } catch {
     return false;
+  }
+}
+
+function readUnlockedThisSession(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem(UNLOCK_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markUnlocked() {
+  try {
+    sessionStorage.setItem(UNLOCK_STORAGE_KEY, "1");
+  } catch {
+    /* ignore */
   }
 }
 
@@ -29,6 +47,7 @@ async function tryPlayBackgroundAudio(
 ): Promise<boolean> {
   applyMusicStartOffset(audio, startAt);
   audio.volume = playLevel;
+  audio.muted = false;
 
   if (!audio.paused) return true;
 
@@ -64,7 +83,8 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [muted, setMuted] = useState(false);
   const [hydrated, setHydrated] = useState(false);
-  const [needsTap, setNeedsTap] = useState(false);
+  const [gateOpen, setGateOpen] = useState(false);
+  const [playing, setPlaying] = useState(false);
 
   const playLevel = Math.min(0.25, Math.max(0, volume));
   const useNativeLoop = startAt <= 0;
@@ -74,12 +94,21 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
     if (!audio || !src) return false;
     if (!active || muted) {
       audio.pause();
+      setPlaying(false);
       return false;
     }
     const ok = await tryPlayBackgroundAudio(audio, startAt, playLevel);
-    setNeedsTap(!ok);
+    setPlaying(ok);
+    if (ok) {
+      setGateOpen(false);
+      markUnlocked();
+    }
     return ok;
   }, [active, muted, playLevel, src, startAt]);
+
+  const unlockFromGesture = useCallback(() => {
+    void startPlayback();
+  }, [startPlayback]);
 
   useEffect(() => {
     setMuted(readMutedPreference());
@@ -87,9 +116,37 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
-    void startPlayback();
-  }, [hydrated, startPlayback]);
+    if (!hydrated || !active || muted || !src) {
+      setGateOpen(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function init() {
+      const ok = await startPlayback();
+      if (cancelled) return;
+
+      if (ok) return;
+
+      if (!readUnlockedThisSession()) {
+        setGateOpen(true);
+        return;
+      }
+
+      const onGesture = () => {
+        void startPlayback();
+      };
+      document.addEventListener("pointerdown", onGesture, { once: true, capture: true });
+      document.addEventListener("keydown", onGesture, { once: true, capture: true });
+    }
+
+    void init();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, active, muted, src, startPlayback]);
 
   useEffect(() => {
     if (!hydrated || !active || muted || !src) return;
@@ -97,29 +154,12 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
     const audio = audioRef.current;
     if (!audio) return;
 
-    let cancelled = false;
     const attempt = () => {
-      if (cancelled || muted || !active) return;
-      void startPlayback();
+      if (!muted && active) void startPlayback();
     };
 
-    attempt();
-    const timers = [80, 300, 800].map((ms) => setTimeout(attempt, ms));
-    audio.addEventListener("canplay", attempt);
-    audio.addEventListener("loadeddata", attempt);
-
-    const onVisible = () => {
-      if (document.visibilityState === "visible") attempt();
-    };
-    document.addEventListener("visibilitychange", onVisible);
-
-    return () => {
-      cancelled = true;
-      timers.forEach(clearTimeout);
-      audio.removeEventListener("canplay", attempt);
-      audio.removeEventListener("loadeddata", attempt);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
+    audio.addEventListener("canplaythrough", attempt);
+    return () => audio.removeEventListener("canplaythrough", attempt);
   }, [hydrated, active, muted, src, startPlayback]);
 
   useEffect(() => {
@@ -135,7 +175,17 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
     return () => audio.removeEventListener("ended", onEnded);
   }, [startAt, muted, active, playLevel]);
 
-  function handleControlClick() {
+  useEffect(() => {
+    if (!active) {
+      audioRef.current?.pause();
+      setPlaying(false);
+      setGateOpen(false);
+    } else if (hydrated && !muted && src) {
+      void startPlayback();
+    }
+  }, [active, hydrated, muted, src, startPlayback]);
+
+  function handleMuteToggle() {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -150,13 +200,8 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
       return;
     }
 
-    if (needsTap || audio.paused) {
-      void startPlayback();
-      return;
-    }
-
     setMuted(true);
-    setNeedsTap(false);
+    setPlaying(false);
     audio.pause();
     try {
       window.localStorage.setItem(MUTE_STORAGE_KEY, "1");
@@ -178,26 +223,31 @@ export function BackgroundMusic({ active }: BackgroundMusicProps) {
         playsInline
         aria-hidden
       />
-      {active ? (
+
+      {gateOpen && active && !muted ? (
         <button
           type="button"
-          onClick={handleControlClick}
+          onClick={unlockFromGesture}
+          className="fixed inset-0 z-[100] flex cursor-pointer flex-col items-center justify-center bg-[#2F3530]/50 px-6 backdrop-blur-sm"
+          aria-label="Entrar en la web de la boda"
+        >
+          <span className="font-serif text-3xl tracking-tight text-white drop-shadow-md sm:text-4xl">
+            {weddingConfig.coupleLine}
+          </span>
+          <span className="mt-6 font-sans text-[11px] font-semibold uppercase tracking-[0.35em] text-white/90">
+            Entrar
+          </span>
+        </button>
+      ) : null}
+
+      {active && (playing || muted) ? (
+        <button
+          type="button"
+          onClick={handleMuteToggle}
           className="fixed bottom-5 right-5 z-30 flex size-11 items-center justify-center rounded-full border border-[#2F3530]/15 bg-[#F2F5F0]/95 text-[#2F3530] shadow-md backdrop-blur-sm transition-colors hover:border-[#8A9B82]/40 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A9B82]"
           aria-pressed={muted}
-          aria-label={
-            muted
-              ? "Activar música de fondo"
-              : needsTap
-                ? "Reproducir música de fondo"
-                : "Silenciar música de fondo"
-          }
-          title={
-            muted
-              ? "Activar música"
-              : needsTap
-                ? "Pulsa para escuchar la música"
-                : "Silenciar música"
-          }
+          aria-label={muted ? "Activar música de fondo" : "Silenciar música de fondo"}
+          title={muted ? "Activar música" : "Silenciar música"}
         >
           {muted ? (
             <VolumeX className="size-5" aria-hidden />
