@@ -1,3 +1,5 @@
+<img width="1159" height="240" alt="VINCÉ" src="https://github.com/user-attachments/assets/f219c44d-e7ee-45f1-a7b6-50b051669932" />
+
 # Boda web (`boda-web`)
 
 Sitio de boda con **Next.js** (App Router), **React**, **TypeScript**, **Tailwind CSS** y datos en **MongoDB Atlas**. Las fotos de invitados pueden guardarse en **Cloudinary** para no llenar la base de datos.
