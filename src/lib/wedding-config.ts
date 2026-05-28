@@ -31,11 +31,10 @@ export const weddingConfig = {
     dressCode: "Cóctel elegante",
     schedule: [
       { time: "12:30", label: "Ceremonia civil" },
-      { time: "13:30", label: "Cóctel de bienvenida en los jardines" },
-      { time: "15:00", label: "Almuerzo nupcial" },
-      { time: "17:30", label: "Tarta y brindis" },
-      { time: "18:00", label: "Fiesta y baile" },
-      { time: "00:00", label: "Cierre con fuegos artificiales" },
+      { time: "13:30", label: "Coctel de bienvenida" },
+      { time: "15:30", label: "Almuerzo nupcial" },
+      { time: "18:30", label: "Fiesta y baile" },
+      { time: "21:30", label: "Fin de fiesta" },
     ],
   },
   autobus: {
@@ -49,7 +48,7 @@ export const weddingConfig = {
     },
     vuelta: [
       { label: "Primera salida", hora: "20:00" },
-      { label: "Segunda salida", hora: "23:00" },
+      { label: "Segunda salida", hora: "22:15" },
     ],
   },
   viajeros: {
