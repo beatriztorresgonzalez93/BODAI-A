@@ -34,7 +34,6 @@ export const weddingConfig = {
       { time: "13:30", label: "Coctel de bienvenida" },
       { time: "15:30", label: "Almuerzo nupcial" },
       { time: "18:30", label: "Fiesta y baile" },
-      { time: "21:30", label: "Fin de fiesta" },
     ],
   },
   autobus: {
@@ -48,7 +47,7 @@ export const weddingConfig = {
     },
     vuelta: [
       { label: "Primera salida", hora: "20:00" },
-      { label: "Segunda salida", hora: "22:15" },
+      { label: "Segunda salida", hora: "Fin de fiesta" },
     ],
   },
   viajeros: {
