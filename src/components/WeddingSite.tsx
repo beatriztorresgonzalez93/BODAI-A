@@ -604,7 +604,7 @@ export function WeddingSite() {
             </div>
 
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(weddingConfig.granDia.lugarMapsQuery)}`}
+              href={weddingConfig.granDia.lugarMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 flex flex-col items-center justify-center rounded-xl bg-[#E3EAE0] px-6 py-14 text-center transition-colors hover:bg-[#D5DDD1]"
@@ -614,7 +614,7 @@ export function WeddingSite() {
                 <span className="block font-semibold tracking-wide text-[#2F3530]">
                   Abrir en Google Maps
                 </span>
-                {weddingConfig.granDia.lugarLines.map((line, i) => (
+                {weddingConfig.granDia.lugarMapsLines.map((line, i) => (
                   <span key={`${i}-${line}`} className="mt-2 block text-[#2F3530]/75">
                     {line}
                   </span>

@@ -24,10 +24,18 @@ export const weddingConfig = {
   granDia: {
     fecha: "5 diciembre 2026",
     ceremonia: "12.30h",
-    lugarLines: ["San José de la Rinconada (Sevilla)"],
-    /** Búsqueda en Google Maps al pulsar el bloque */
-    lugarMapsQuery:
-      "Carretera Sevilla – Brenes km 2, San José de la Rinconada, Sevilla, España",
+    lugarLines: [
+      "Cortijo de Juan",
+      "San José de la Rinconada (Sevilla)",
+    ],
+    lugarMapsLines: [
+      "Cortijo de Juan",
+      "Carretera Sevilla – Brenes, km 2",
+      "San José de la Rinconada (Sevilla)",
+    ],
+    /** Pin exacto de Cortijo de Juan (no el pueblo) */
+    lugarMapsUrl:
+      "https://www.google.com/maps/place/Cortijo+de+Juan/data=!4m2!3m1!1s0xd1269da7f00ffd9:0x1e7a82664031",
     dressCode: "Cóctel elegante",
     schedule: [
       { time: "12:30", label: "Ceremonia civil" },
