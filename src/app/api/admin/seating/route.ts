@@ -3,44 +3,10 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getDb } from "@/lib/mongodb";
 import {
   flattenRsvpGuests,
-  type RsvpForSeating,
+  parseRsvpDoc,
   type SeatAssignment,
   type SeatingTable,
 } from "@/lib/seating";
-
-function parseRsvps(docs: Record<string, unknown>[]): RsvpForSeating[] {
-  return docs.map((doc) => {
-    const legacyNames = Array.isArray(doc.companionNames)
-      ? doc.companionNames.map((n: unknown) => String(n ?? "").trim())
-      : [];
-    const companionsRaw = Array.isArray(doc.companions) ? doc.companions : [];
-    const companions =
-      companionsRaw.length > 0
-        ? companionsRaw.map((c: unknown) => {
-            const o = c as Record<string, unknown>;
-            return {
-              name: String(o?.name ?? "").trim(),
-              isChild: Boolean(o?.isChild),
-              kidsMenu: Boolean(o?.kidsMenu),
-              allergies: String(o?.allergies ?? "").trim(),
-            };
-          })
-        : legacyNames.map((n) => ({
-            name: n,
-            isChild: false,
-            kidsMenu: false,
-            allergies: "",
-          }));
-
-    return {
-      id: String(doc._id),
-      name: String(doc.name ?? ""),
-      companions,
-      allergies: String(doc.allergies ?? ""),
-      needsBus: Boolean(doc.needsBus),
-    };
-  });
-}
 
 function mapTable(doc: Record<string, unknown>): SeatingTable {
   return {
@@ -68,7 +34,7 @@ export async function GET() {
       db.collection("seat_assignments").find({}).toArray(),
     ]);
 
-    const rsvps = parseRsvps(rsvpDocs as Record<string, unknown>[]);
+    const rsvps = (rsvpDocs as Record<string, unknown>[]).map(parseRsvpDoc);
     const allGuests = flattenRsvpGuests(rsvps);
     const guestByKey = new Map(allGuests.map((g) => [g.guestKey, g]));
 

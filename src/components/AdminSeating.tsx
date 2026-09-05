@@ -5,6 +5,7 @@ import {
   LayoutGrid,
   List,
   Minus,
+  Pencil,
   Plus,
   Search,
   Trash2,
@@ -41,6 +42,41 @@ type ViewMode = "plan" | "list";
 
 type FormStatus = { kind: "success" | "error"; message: string } | null;
 
+type ListGuestRow = {
+  guestKey: string;
+  rsvpId: string;
+  guestName: string;
+  partyLead: string;
+  allergies: string;
+  needsBus: boolean;
+  isChild: boolean;
+  kidsMenu: boolean;
+  tableName: string;
+  seatIndex: number | null;
+  assigned: boolean;
+};
+
+type CompanionDraft = {
+  key: string;
+  originalPersonIndex?: number;
+  name: string;
+  isChild: boolean;
+  kidsMenu: boolean;
+  allergies: string;
+};
+
+type EditDraft = {
+  rsvpId: string;
+  name: string;
+  allergies: string;
+  needsBus: boolean;
+  companions: CompanionDraft[];
+};
+
+function notifyAdminDataChanged() {
+  window.dispatchEvent(new Event("wedding-admin-data-changed"));
+}
+
 async function apiJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { credentials: "include", ...init });
   return (await res.json()) as T;
@@ -65,6 +101,9 @@ export function AdminSeating() {
   const [guestSearch, setGuestSearch] = useState("");
   const [listSearch, setListSearch] = useState("");
   const [draggingTableId, setDraggingTableId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<EditDraft | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [busyGuestKey, setBusyGuestKey] = useState<string | null>(null);
   const dragOffset = useRef({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -126,12 +165,37 @@ export function AdminSeating() {
     );
   }, [data?.unassignedGuests, guestSearch]);
 
-  const listRows = useMemo(() => {
+  const listRows = useMemo((): ListGuestRow[] => {
     const q = listSearch.trim().toLowerCase();
-    const rows = (data?.assignments ?? []).map((a) => ({
-      ...a,
+    const assigned: ListGuestRow[] = (data?.assignments ?? []).map((a) => ({
+      guestKey: a.guestKey,
+      rsvpId: a.rsvpId,
+      guestName: a.guestName,
+      partyLead: a.partyLead,
+      allergies: a.allergies,
+      needsBus: a.needsBus,
+      isChild: a.isChild,
+      kidsMenu: a.kidsMenu,
       tableName: tableById.get(a.tableId)?.name ?? "—",
+      seatIndex: a.seatIndex,
+      assigned: true,
     }));
+    const pending: ListGuestRow[] = (data?.unassignedGuests ?? []).map((g) => ({
+      guestKey: g.guestKey,
+      rsvpId: g.rsvpId,
+      guestName: g.name,
+      partyLead: g.partyLead,
+      allergies: g.allergies,
+      needsBus: g.needsBus,
+      isChild: g.isChild,
+      kidsMenu: g.kidsMenu,
+      tableName: "Sin asignar",
+      seatIndex: null,
+      assigned: false,
+    }));
+    const rows = [...assigned, ...pending].sort((a, b) =>
+      a.guestName.localeCompare(b.guestName, "es"),
+    );
     if (!q) return rows;
     return rows.filter(
       (r) =>
@@ -139,7 +203,7 @@ export function AdminSeating() {
         r.tableName.toLowerCase().includes(q) ||
         r.partyLead.toLowerCase().includes(q),
     );
-  }, [data?.assignments, listSearch, tableById]);
+  }, [data?.assignments, data?.unassignedGuests, listSearch, tableById]);
 
   async function createTables(count: number) {
     const res = await apiJson<{ ok: boolean; message: string }>("/api/admin/seating/tables", {
@@ -206,6 +270,104 @@ export function AdminSeating() {
     });
     setStatus({ kind: res.ok ? "success" : "error", message: res.message });
     if (res.ok) void loadSeating();
+  }
+
+  async function openEditGuest(rsvpId: string) {
+    setStatus(null);
+    const res = await apiJson<
+      | {
+          ok: true;
+          rsvp: {
+            id: string;
+            name: string;
+            allergies: string;
+            needsBus: boolean;
+            companions: {
+              name: string;
+              isChild: boolean;
+              kidsMenu: boolean;
+              allergies: string;
+              personIndex: number;
+            }[];
+          };
+        }
+      | { ok: false; message: string }
+    >(`/api/admin/rsvps/${rsvpId}`);
+    if (!res.ok) {
+      setStatus({ kind: "error", message: res.message });
+      return;
+    }
+    setEditDraft({
+      rsvpId: res.rsvp.id,
+      name: res.rsvp.name,
+      allergies: res.rsvp.allergies,
+      needsBus: res.rsvp.needsBus,
+      companions: res.rsvp.companions.map((c) => ({
+        key: `c-${c.personIndex}`,
+        originalPersonIndex: c.personIndex,
+        name: c.name,
+        isChild: c.isChild,
+        kidsMenu: c.kidsMenu,
+        allergies: c.allergies,
+      })),
+    });
+  }
+
+  async function saveEditGuest() {
+    if (!editDraft) return;
+    setEditSaving(true);
+    const res = await apiJson<{ ok: boolean; message: string }>(
+      `/api/admin/rsvps/${editDraft.rsvpId}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editDraft.name,
+          allergies: editDraft.allergies,
+          needsBus: editDraft.needsBus,
+          companions: editDraft.companions.map((c) => ({
+            originalPersonIndex: c.originalPersonIndex,
+            name: c.name,
+            isChild: c.isChild,
+            kidsMenu: c.kidsMenu,
+            allergies: c.allergies,
+          })),
+        }),
+      },
+    );
+    setEditSaving(false);
+    setStatus({ kind: res.ok ? "success" : "error", message: res.message });
+    if (res.ok) {
+      setEditDraft(null);
+      notifyAdminDataChanged();
+      void loadSeating();
+    }
+  }
+
+  async function deleteGuest(row: ListGuestRow) {
+    const extra =
+      row.guestKey.endsWith(":0") && row.guestName === row.partyLead
+        ? " Si tiene acompañantes, el primero pasará a ser el titular."
+        : "";
+    const ok = window.confirm(
+      `¿Eliminar a ${row.guestName} por completo? No aparecerá en confirmaciones ni en el seating.${extra}`,
+    );
+    if (!ok) return;
+    setBusyGuestKey(row.guestKey);
+    const res = await apiJson<{ ok: boolean; message: string }>(
+      `/api/admin/rsvps/${row.rsvpId}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guestKey: row.guestKey }),
+      },
+    );
+    setBusyGuestKey(null);
+    setStatus({ kind: res.ok ? "success" : "error", message: res.message });
+    if (res.ok) {
+      notifyAdminDataChanged();
+      void loadSeating();
+    }
   }
 
   function onSeatClick(table: SeatingTable, seatIndex: number) {
@@ -384,10 +546,23 @@ export function AdminSeating() {
           setListSearch={setListSearch}
           unassigned={data?.unassignedGuests ?? []}
           onUnassign={unassignGuest}
+          onEdit={(row) => void openEditGuest(row.rsvpId)}
+          onDelete={(row) => void deleteGuest(row)}
+          busyGuestKey={busyGuestKey}
           setSelectedGuestKey={setSelectedGuestKey}
           setViewMode={setViewMode}
         />
       )}
+
+      {editDraft ? (
+        <GuestEditModal
+          draft={editDraft}
+          saving={editSaving}
+          onChange={setEditDraft}
+          onClose={() => setEditDraft(null)}
+          onSave={() => void saveEditGuest()}
+        />
+      ) : null}
     </article>
   );
 }
@@ -792,11 +967,14 @@ function SeatingPlanView(props: PlanProps) {
 }
 
 type ListProps = {
-  listRows: (SeatAssignment & { tableName: string })[];
+  listRows: ListGuestRow[];
   listSearch: string;
   setListSearch: (v: string) => void;
   unassigned: GuestPerson[];
   onUnassign: (guestKey: string) => Promise<void>;
+  onEdit: (row: ListGuestRow) => void;
+  onDelete: (row: ListGuestRow) => void;
+  busyGuestKey: string | null;
   setSelectedGuestKey: (k: string | null) => void;
   setViewMode: (v: ViewMode) => void;
 };
@@ -807,6 +985,9 @@ function SeatingListView({
   setListSearch,
   unassigned,
   onUnassign,
+  onEdit,
+  onDelete,
+  busyGuestKey,
   setSelectedGuestKey,
   setViewMode,
 }: ListProps) {
@@ -823,7 +1004,7 @@ function SeatingListView({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[680px] border-separate border-spacing-0 text-left text-sm">
+        <table className="w-full min-w-[760px] border-separate border-spacing-0 text-left text-sm">
           <thead className="text-[#8A9B82]">
             <tr>
               <th className="border-b border-[#2F3530]/10 py-3 pr-4 font-semibold">Mesa</th>
@@ -831,14 +1012,19 @@ function SeatingListView({
               <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">Invitado</th>
               <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">RSVP</th>
               <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">Alergias</th>
+              <th className="border-b border-[#2F3530]/10 py-3 px-4 font-semibold">Bus</th>
               <th className="border-b border-[#2F3530]/10 py-3 pl-4 font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {listRows.map((row) => (
-              <tr key={row.id} className="align-top">
-                <td className="border-b border-[#2F3530]/8 py-3 pr-4 font-medium">{row.tableName}</td>
-                <td className="border-b border-[#2F3530]/8 py-3 px-4 tabular-nums">{row.seatIndex + 1}</td>
+              <tr key={row.guestKey} className="align-top">
+                <td className="border-b border-[#2F3530]/8 py-3 pr-4 font-medium">
+                  {row.tableName}
+                </td>
+                <td className="border-b border-[#2F3530]/8 py-3 px-4 tabular-nums">
+                  {row.seatIndex != null ? row.seatIndex + 1 : "—"}
+                </td>
                 <td className="border-b border-[#2F3530]/8 py-3 px-4">
                   <p>{row.guestName}</p>
                   {(row.isChild || row.kidsMenu) && (
@@ -849,24 +1035,50 @@ function SeatingListView({
                     </p>
                   )}
                 </td>
-                <td className="border-b border-[#2F3530]/8 py-3 px-4 text-[#2F3530]/80">{row.partyLead}</td>
+                <td className="border-b border-[#2F3530]/8 py-3 px-4 text-[#2F3530]/80">
+                  {row.partyLead}
+                </td>
                 <td className="border-b border-[#2F3530]/8 py-3 px-4">{row.allergies || "—"}</td>
+                <td className="border-b border-[#2F3530]/8 py-3 px-4">
+                  {row.needsBus ? "Sí" : "No"}
+                </td>
                 <td className="border-b border-[#2F3530]/8 py-3 pl-4">
-                  <button
-                    type="button"
-                    onClick={() => void onUnassign(row.guestKey)}
-                    className="inline-flex items-center gap-1 rounded-md border border-[#2F3530]/20 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] hover:bg-[#FAFCF9]"
-                  >
-                    <UserMinus className="size-3.5" />
-                    Quitar
-                  </button>
+                  <div className="flex flex-col items-stretch gap-1.5">
+                    {row.assigned ? (
+                      <button
+                        type="button"
+                        onClick={() => void onUnassign(row.guestKey)}
+                        className="inline-flex items-center justify-center gap-1 rounded-md border border-[#2F3530]/20 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] hover:bg-[#FAFCF9]"
+                      >
+                        <UserMinus className="size-3.5" />
+                        Quitar
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => onEdit(row)}
+                      className="inline-flex items-center justify-center gap-1 rounded-md border border-[#2F3530]/20 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] hover:bg-[#FAFCF9]"
+                    >
+                      <Pencil className="size-3.5" />
+                      Modificar
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busyGuestKey === row.guestKey}
+                      onClick={() => onDelete(row)}
+                      className="inline-flex items-center justify-center gap-1 rounded-md border border-red-200 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-red-700 hover:bg-red-50 disabled:opacity-50"
+                    >
+                      <Trash2 className="size-3.5" />
+                      Eliminar
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {listRows.length === 0 ? (
-          <p className="py-6 text-sm text-[#2F3530]/55">Nadie sentado todavía.</p>
+          <p className="py-6 text-sm text-[#2F3530]/55">No hay invitados confirmados.</p>
         ) : null}
       </div>
 
@@ -891,6 +1103,221 @@ function SeatingListView({
           </ul>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function GuestEditModal({
+  draft,
+  saving,
+  onChange,
+  onClose,
+  onSave,
+}: {
+  draft: EditDraft;
+  saving: boolean;
+  onChange: (next: EditDraft) => void;
+  onClose: () => void;
+  onSave: () => void;
+}) {
+  function updateCompanion(key: string, patch: Partial<CompanionDraft>) {
+    onChange({
+      ...draft,
+      companions: draft.companions.map((c) => (c.key === key ? { ...c, ...patch } : c)),
+    });
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[#2F3530]/40 p-3 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-guest-title"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <h3 id="edit-guest-title" className="font-serif text-2xl">
+            Modificar invitado
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1 hover:bg-[#FAFCF9]"
+            aria-label="Cerrar"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-[#2F3530]/60">
+          Puedes cambiar el titular, alergias, autobús y acompañantes de esta confirmación.
+        </p>
+
+        <div className="mt-5 space-y-4">
+          <label className="block">
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+              Nombre del titular
+            </span>
+            <input
+              value={draft.name}
+              onChange={(e) => onChange({ ...draft, name: e.target.value })}
+              className="mt-2 w-full rounded-lg border border-[#2F3530]/15 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#8A9B82]/40"
+            />
+          </label>
+          <label className="block">
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+              Alergias o intolerancias
+            </span>
+            <input
+              value={draft.allergies}
+              onChange={(e) => onChange({ ...draft, allergies: e.target.value })}
+              placeholder="Opcional"
+              className="mt-2 w-full rounded-lg border border-[#2F3530]/15 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#8A9B82]/40"
+            />
+          </label>
+
+          <div>
+            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+              ¿Usará el autobús?
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#2F3530]/15 px-3 py-2.5 text-sm has-[:checked]:border-[#8A9B82] has-[:checked]:bg-[#F0F4EE]">
+                <input
+                  type="radio"
+                  name="edit-bus"
+                  checked={draft.needsBus}
+                  onChange={() => onChange({ ...draft, needsBus: true })}
+                  className="size-4 accent-[#8A9B82]"
+                />
+                Sí
+              </label>
+              <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#2F3530]/15 px-3 py-2.5 text-sm has-[:checked]:border-[#8A9B82] has-[:checked]:bg-[#F0F4EE]">
+                <input
+                  type="radio"
+                  name="edit-bus"
+                  checked={!draft.needsBus}
+                  onChange={() => onChange({ ...draft, needsBus: false })}
+                  className="size-4 accent-[#8A9B82]"
+                />
+                No
+              </label>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
+                Acompañantes
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({
+                    ...draft,
+                    companions: [
+                      ...draft.companions,
+                      {
+                        key: `new-${Date.now()}`,
+                        name: "",
+                        isChild: false,
+                        kidsMenu: false,
+                        allergies: "",
+                      },
+                    ],
+                  })
+                }
+                className="inline-flex items-center gap-1 rounded-md border border-[#2F3530]/20 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] hover:bg-[#FAFCF9]"
+              >
+                <Plus className="size-3.5" />
+                Añadir
+              </button>
+            </div>
+
+            {draft.companions.length === 0 ? (
+              <p className="text-sm text-[#2F3530]/50">Sin acompañantes.</p>
+            ) : (
+              draft.companions.map((c, i) => (
+                <div
+                  key={c.key}
+                  className="space-y-3 rounded-xl border border-[#2F3530]/10 bg-[#FAFCF9] p-3"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
+                      Acompañante {i + 2}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onChange({
+                          ...draft,
+                          companions: draft.companions.filter((x) => x.key !== c.key),
+                        })
+                      }
+                      className="rounded-md p-1 text-red-700 hover:bg-red-50"
+                      aria-label="Quitar acompañante"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
+                  <input
+                    value={c.name}
+                    onChange={(e) => updateCompanion(c.key, { name: e.target.value })}
+                    placeholder="Nombre y apellidos"
+                    className="w-full rounded-lg border border-[#2F3530]/15 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#8A9B82]/40"
+                  />
+                  <div className="flex flex-wrap gap-x-5 gap-y-2">
+                    <label className="flex cursor-pointer items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={c.isChild}
+                        onChange={(e) => updateCompanion(c.key, { isChild: e.target.checked })}
+                        className="size-4 accent-[#8A9B82]"
+                      />
+                      Es niño/a
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={c.kidsMenu}
+                        onChange={(e) => updateCompanion(c.key, { kidsMenu: e.target.checked })}
+                        className="size-4 accent-[#8A9B82]"
+                      />
+                      Menú infantil
+                    </label>
+                  </div>
+                  <input
+                    value={c.allergies}
+                    onChange={(e) => updateCompanion(c.key, { allergies: e.target.value })}
+                    placeholder="Alergias (opcional)"
+                    className="w-full rounded-lg border border-[#2F3530]/15 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#8A9B82]/40"
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-[#2F3530]/20 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] hover:bg-[#FAFCF9]"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={onSave}
+            className="rounded-lg bg-[#8A9B82] px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-[#7A8B72] disabled:opacity-60"
+          >
+            {saving ? "Guardando…" : "Guardar"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

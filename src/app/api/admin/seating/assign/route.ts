@@ -2,41 +2,7 @@ import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getDb } from "@/lib/mongodb";
-import { flattenRsvpGuests } from "@/lib/seating";
-
-function parseRsvps(docs: Record<string, unknown>[]) {
-  return docs.map((doc) => {
-    const legacyNames = Array.isArray(doc.companionNames)
-      ? doc.companionNames.map((n: unknown) => String(n ?? "").trim())
-      : [];
-    const companionsRaw = Array.isArray(doc.companions) ? doc.companions : [];
-    const companions =
-      companionsRaw.length > 0
-        ? companionsRaw.map((c: unknown) => {
-            const o = c as Record<string, unknown>;
-            return {
-              name: String(o?.name ?? "").trim(),
-              isChild: Boolean(o?.isChild),
-              kidsMenu: Boolean(o?.kidsMenu),
-              allergies: String(o?.allergies ?? "").trim(),
-            };
-          })
-        : legacyNames.map((n) => ({
-            name: n,
-            isChild: false,
-            kidsMenu: false,
-            allergies: "",
-          }));
-
-    return {
-      id: String(doc._id),
-      name: String(doc.name ?? ""),
-      companions,
-      allergies: String(doc.allergies ?? ""),
-      needsBus: Boolean(doc.needsBus),
-    };
-  });
-}
+import { flattenRsvpGuests, parseRsvpDoc } from "@/lib/seating";
 
 export async function POST(request: Request) {
   if (!(await isAdminAuthenticated())) {
@@ -86,7 +52,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: "Confirmación no encontrada." }, { status: 404 });
     }
 
-    const guests = flattenRsvpGuests(parseRsvps([rsvpDoc as Record<string, unknown>]));
+    const guests = flattenRsvpGuests([parseRsvpDoc(rsvpDoc as Record<string, unknown>)]);
     const guest = guests.find((g) => g.guestKey === guestKey);
     if (!guest) {
       return NextResponse.json({ ok: false, message: "Invitado no encontrado." }, { status: 404 });

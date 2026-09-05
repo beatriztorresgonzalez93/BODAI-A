@@ -225,6 +225,13 @@ export function WeddingSite() {
     void checkSession();
   }, []);
 
+  useEffect(() => {
+    if (!adminAuthenticated) return;
+    const onChange = () => void loadAdminOverview();
+    window.addEventListener("wedding-admin-data-changed", onChange);
+    return () => window.removeEventListener("wedding-admin-data-changed", onChange);
+  }, [adminAuthenticated, loadAdminOverview]);
+
   const [nameLeft, nameRight] = weddingConfig.coupleLine
     .split("&")
     .map((s) => s.trim());

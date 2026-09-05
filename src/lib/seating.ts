@@ -36,16 +36,64 @@ export type GuestPerson = {
   partyLead: string;
 };
 
+export type CompanionPerson = {
+  name: string;
+  isChild: boolean;
+  kidsMenu: boolean;
+  allergies: string;
+};
+
 export type RsvpForSeating = {
   id: string;
   name: string;
-  companions: { name: string; isChild: boolean; kidsMenu: boolean; allergies: string }[];
+  companions: CompanionPerson[];
   allergies: string;
   needsBus: boolean;
 };
 
 export function guestKeyFor(rsvpId: string, personIndex: number) {
   return `${rsvpId}:${personIndex}`;
+}
+
+export function parseGuestKey(guestKey: string) {
+  const sep = guestKey.lastIndexOf(":");
+  if (sep <= 0) return null;
+  const rsvpId = guestKey.slice(0, sep);
+  const personIndex = Number(guestKey.slice(sep + 1));
+  if (!rsvpId || !Number.isInteger(personIndex) || personIndex < 0) return null;
+  return { rsvpId, personIndex };
+}
+
+export function parseRsvpDoc(doc: Record<string, unknown>): RsvpForSeating {
+  const legacyNames = Array.isArray(doc.companionNames)
+    ? doc.companionNames.map((n: unknown) => String(n ?? "").trim())
+    : [];
+  const companionsRaw = Array.isArray(doc.companions) ? doc.companions : [];
+  const companions: CompanionPerson[] =
+    companionsRaw.length > 0
+      ? companionsRaw.map((c: unknown) => {
+          const o = c as Record<string, unknown>;
+          return {
+            name: String(o?.name ?? "").trim(),
+            isChild: Boolean(o?.isChild),
+            kidsMenu: Boolean(o?.kidsMenu),
+            allergies: String(o?.allergies ?? "").trim(),
+          };
+        })
+      : legacyNames.map((n) => ({
+          name: n,
+          isChild: false,
+          kidsMenu: false,
+          allergies: "",
+        }));
+
+  return {
+    id: String(doc._id),
+    name: String(doc.name ?? ""),
+    companions,
+    allergies: String(doc.allergies ?? ""),
+    needsBus: Boolean(doc.needsBus),
+  };
 }
 
 export function flattenRsvpGuests(rsvps: RsvpForSeating[]): GuestPerson[] {
