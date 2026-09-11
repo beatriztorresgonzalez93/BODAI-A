@@ -7,6 +7,7 @@ import {
   Camera,
   Clock,
   Download,
+  CheckCircle,
   ImageIcon,
   LogOut,
   Map as MapIcon,
@@ -158,6 +159,8 @@ export function WeddingSite() {
   const [rsvpGuestCount, setRsvpGuestCount] = useState(1);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const rsvpBannerRef = useRef<HTMLDivElement>(null);
+  const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
   const [adminStatus, setAdminStatus] = useState<FormStatus>(null);
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
@@ -238,6 +241,7 @@ export function WeddingSite() {
 
   async function onRsvpSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (rsvpSubmitting) return;
     const form = e.currentTarget;
     const fd = new FormData(form);
     const guestCount = Number(fd.get("guestCount") ?? 1);
@@ -255,7 +259,9 @@ export function WeddingSite() {
       allergies: String(fd.get("lead_allergies") ?? "").trim(),
       needsBus: String(fd.get("needsBus")) === "yes",
     };
+    setRsvpSubmitting(true);
     const { response, data } = await postJson("/api/rsvp", payload);
+    setRsvpSubmitting(false);
     setRsvpStatus({
       kind: response.ok ? "success" : "error",
       message: data.message,
@@ -265,6 +271,11 @@ export function WeddingSite() {
       setRsvpGuestCount(1);
     }
   }
+
+  useEffect(() => {
+    if (!rsvpStatus) return;
+    rsvpBannerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [rsvpStatus]);
 
   async function onSongSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -656,10 +667,50 @@ export function WeddingSite() {
             <p className="-mt-4 mb-8 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8A9B82]">
               {weddingConfig.rsvpDeadlineLine}
             </p>
+            {rsvpStatus?.kind === "success" ? (
+              <div
+                ref={rsvpBannerRef}
+                className="mx-auto max-w-md rounded-2xl border-2 border-[#8A9B82] bg-[#E6ECE3] px-6 py-10 text-center shadow-md shadow-[#2F3530]/10"
+                role="status"
+                aria-live="polite"
+              >
+                <CheckCircle
+                  className="mx-auto size-16 text-[#6B7F63]"
+                  strokeWidth={1.5}
+                />
+                <p className="mt-5 font-serif text-3xl leading-tight text-[#2F3530] sm:text-4xl">
+                  ¡Asistencia confirmada!
+                </p>
+                <p className="mt-4 font-sans text-base leading-relaxed text-[#2F3530]/80">
+                  Gracias, ya hemos recibido tu respuesta.
+                  <span className="mt-1 block font-semibold text-[#2F3530]">
+                    No hace falta enviarla otra vez.
+                  </span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setRsvpStatus(null)}
+                  className="mt-8 w-full rounded-lg border border-[#2F3530]/25 bg-white py-3 font-sans text-xs font-semibold uppercase tracking-[0.15em] text-[#2F3530] transition-colors hover:bg-[#FAFCF9]"
+                >
+                  Enviar otra confirmación
+                </button>
+              </div>
+            ) : (
             <form
               className="mx-auto max-w-md space-y-6"
               onSubmit={onRsvpSubmit}
             >
+              {rsvpStatus?.kind === "error" ? (
+                <div
+                  ref={rsvpBannerRef}
+                  className="rounded-xl border-2 border-red-300 bg-red-50 px-4 py-4 text-center"
+                  role="alert"
+                >
+                  <p className="font-serif text-xl text-red-800">
+                    {rsvpStatus.message}
+                  </p>
+                </div>
+              ) : null}
               <div>
                 <label className="block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A9B82]">
                   Tu nombre completo
@@ -780,22 +831,13 @@ export function WeddingSite() {
               </div>
               <button
                 type="submit"
-                className="w-full rounded-lg border border-[#2F3530]/25 bg-white py-4 font-serif text-sm font-semibold uppercase tracking-[0.15em] text-[#2F3530] transition-colors hover:bg-[#FAFCF9]"
+                disabled={rsvpSubmitting}
+                className="w-full rounded-lg border border-[#2F3530]/25 bg-white py-4 font-serif text-sm font-semibold uppercase tracking-[0.15em] text-[#2F3530] transition-colors hover:bg-[#FAFCF9] disabled:opacity-60"
               >
-                Confirmar asistencia
+                {rsvpSubmitting ? "Enviando…" : "Confirmar asistencia"}
               </button>
-              {rsvpStatus ? (
-                <p
-                  className={`text-center text-sm ${
-                    rsvpStatus.kind === "success"
-                      ? "text-green-800"
-                      : "text-red-700"
-                  }`}
-                >
-                  {rsvpStatus.message}
-                </p>
-              ) : null}
             </form>
+            )}
           </section>
         ) : null}
 
