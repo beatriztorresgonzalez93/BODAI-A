@@ -17,6 +17,7 @@ import {
   FLOOR_HEIGHT,
   FLOOR_WIDTH,
   seatPositions,
+  tableGeometry,
   type GuestPerson,
   type SeatAssignment,
   type SeatingTable,
@@ -699,13 +700,20 @@ function SeatingPlanView(props: PlanProps) {
             </text>
 
             {tables.map((table) => {
+              const geom = tableGeometry(table.capacity, table.shape);
               const seats = seatPositions(table.x, table.y, table.capacity, table.shape);
               const occupied = seats.filter((_, i) =>
                 assignmentBySeat.has(`${table.id}:${i}`),
               ).length;
               const isSelected = selectedTableId === table.id;
               const isDragging = draggingTableId === table.id;
-              const tableR = table.shape === "rect" ? 0 : 36;
+              const seatDrawOrder = seats
+                .map((seat, seatIndex) => ({
+                  seat,
+                  seatIndex,
+                  occupiedSeat: assignmentBySeat.has(`${table.id}:${seatIndex}`),
+                }))
+                .sort((a, b) => Number(b.occupiedSeat) - Number(a.occupiedSeat));
 
               return (
                 <g
@@ -717,10 +725,10 @@ function SeatingPlanView(props: PlanProps) {
                 >
                   {table.shape === "rect" ? (
                     <rect
-                      x={table.x - 58}
-                      y={table.y - 40}
-                      width={116}
-                      height={80}
+                      x={table.x - geom.halfW}
+                      y={table.y - geom.halfH}
+                      width={geom.halfW * 2}
+                      height={geom.halfH * 2}
                       rx={8}
                       fill={isSelected ? "#DDE6D8" : "#FFFFFF"}
                       stroke={isSelected ? "#8A9B82" : "#B8C4B0"}
@@ -730,7 +738,7 @@ function SeatingPlanView(props: PlanProps) {
                     <circle
                       cx={table.x}
                       cy={table.y}
-                      r={tableR}
+                      r={geom.tableRadius}
                       fill={isSelected ? "#DDE6D8" : "#FFFFFF"}
                       stroke={isSelected ? "#8A9B82" : "#B8C4B0"}
                       strokeWidth={isSelected ? 2.5 : 1.5}
@@ -756,10 +764,9 @@ function SeatingPlanView(props: PlanProps) {
                     {occupied}/{table.capacity}
                   </text>
 
-                  {seats.map((seat, seatIndex) => {
+                  {seatDrawOrder.map(({ seat, seatIndex, occupiedSeat }) => {
                     const key = `${table.id}:${seatIndex}`;
                     const assignment = assignmentBySeat.get(key);
-                    const occupiedSeat = Boolean(assignment);
                     const canAssign = Boolean(selectedGuestKey) && !occupiedSeat;
 
                     return (
@@ -775,7 +782,7 @@ function SeatingPlanView(props: PlanProps) {
                         <circle
                           cx={seat.x}
                           cy={seat.y}
-                          r={14}
+                          r={geom.seatRadius}
                           fill={
                             occupiedSeat
                               ? "#8A9B82"
@@ -783,8 +790,8 @@ function SeatingPlanView(props: PlanProps) {
                                 ? "#C5D4BC"
                                 : "#FFFFFF"
                           }
-                          stroke={canAssign ? "#6B7F63" : occupiedSeat ? "#6B7F63" : "#C8D0C4"}
-                          strokeWidth={canAssign ? 2 : 1.25}
+                          stroke={canAssign ? "#6B7F63" : occupiedSeat ? "#6B7F63" : "#8A9B82"}
+                          strokeWidth={occupiedSeat ? 1.25 : 2}
                         />
                         <text
                           x={seat.x}

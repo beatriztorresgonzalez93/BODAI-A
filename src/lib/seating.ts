@@ -127,54 +127,103 @@ export function flattenRsvpGuests(rsvps: RsvpForSeating[]): GuestPerson[] {
   return guests.filter((g) => g.name.length > 0);
 }
 
+export type TableGeometry = {
+  seatRadius: number;
+  tableRadius: number;
+  halfW: number;
+  halfH: number;
+  orbit: number;
+  orbitW: number;
+  orbitH: number;
+};
+
+export function tableGeometry(capacity: number, shape: TableShape): TableGeometry {
+  const n = Math.max(1, capacity);
+  const seatRadius = n >= 18 ? 10 : n >= 14 ? 11 : 12;
+  const minSpacing = 2 * seatRadius + 5;
+
+  if (shape === "rect") {
+    const peri = Math.max(n * minSpacing, 220);
+    const outerSum = peri / 4;
+    const aspect = 1.4;
+    const orbitH = outerSum / (aspect + 1);
+    const orbitW = outerSum - orbitH;
+    return {
+      seatRadius,
+      tableRadius: 0,
+      halfW: Math.max(42, orbitW - seatRadius - 6),
+      halfH: Math.max(28, orbitH - seatRadius - 6),
+      orbit: 0,
+      orbitW,
+      orbitH,
+    };
+  }
+
+  const orbit = Math.max(58, (n * minSpacing) / (2 * Math.PI));
+  return {
+    seatRadius,
+    tableRadius: Math.max(32, orbit - seatRadius - 8),
+    halfW: 0,
+    halfH: 0,
+    orbit,
+    orbitW: orbit,
+    orbitH: orbit,
+  };
+}
+
+function pointsOnRect(
+  cx: number,
+  cy: number,
+  halfW: number,
+  halfH: number,
+  count: number,
+) {
+  const width = halfW * 2;
+  const height = halfH * 2;
+  const peri = 2 * (width + height);
+  const seats: { x: number; y: number }[] = [];
+  for (let i = 0; i < count; i++) {
+    let d = (i / count) * peri + width / 2;
+    d = ((d % peri) + peri) % peri;
+    let x: number;
+    let y: number;
+    if (d <= width) {
+      x = -halfW + d;
+      y = -halfH;
+    } else if (d <= width + height) {
+      x = halfW;
+      y = -halfH + (d - width);
+    } else if (d <= 2 * width + height) {
+      x = halfW - (d - width - height);
+      y = halfH;
+    } else {
+      x = -halfW;
+      y = halfH - (d - 2 * width - height);
+    }
+    seats.push({ x: cx + x, y: cy + y });
+  }
+  return seats;
+}
+
 export function seatPositions(
   cx: number,
   cy: number,
   capacity: number,
   shape: TableShape,
-  tableRadius = 36,
 ) {
-  const seats: { x: number; y: number }[] = [];
-  const seatOrbit = tableRadius + 22;
+  const n = Math.max(1, capacity);
+  const geom = tableGeometry(n, shape);
 
   if (shape === "rect") {
-    const perSide = Math.max(1, Math.ceil(capacity / 4));
-    const w = tableRadius * 1.6;
-    const h = tableRadius * 1.1;
-    const sides: { ax: number; ay: number; bx: number; by: number }[] = [
-      { ax: -w, ay: -h, bx: w, by: -h },
-      { ax: w, ay: -h, bx: w, by: h },
-      { ax: w, ay: h, bx: -w, by: h },
-      { ax: -w, ay: h, bx: -w, by: -h },
-    ];
-    let idx = 0;
-    for (const side of sides) {
-      for (let i = 0; i < perSide && idx < capacity; i++) {
-        const t = perSide === 1 ? 0.5 : i / (perSide - 1);
-        const px = side.ax + (side.bx - side.ax) * t;
-        const py = side.ay + (side.by - side.ay) * t;
-        const len = Math.hypot(px, py) || 1;
-        const nx = (px / len) * seatOrbit;
-        const ny = (py / len) * seatOrbit;
-        seats.push({ x: cx + nx, y: cy + ny });
-        idx++;
-      }
-    }
-    while (seats.length < capacity) {
-      const angle = (2 * Math.PI * seats.length) / capacity - Math.PI / 2;
-      seats.push({
-        x: cx + Math.cos(angle) * seatOrbit,
-        y: cy + Math.sin(angle) * seatOrbit,
-      });
-    }
-    return seats.slice(0, capacity);
+    return pointsOnRect(cx, cy, geom.orbitW, geom.orbitH, n);
   }
 
-  for (let i = 0; i < capacity; i++) {
-    const angle = (2 * Math.PI * i) / capacity - Math.PI / 2;
+  const seats: { x: number; y: number }[] = [];
+  for (let i = 0; i < n; i++) {
+    const angle = (2 * Math.PI * i) / n - Math.PI / 2;
     seats.push({
-      x: cx + Math.cos(angle) * seatOrbit,
-      y: cy + Math.sin(angle) * seatOrbit,
+      x: cx + Math.cos(angle) * geom.orbit,
+      y: cy + Math.sin(angle) * geom.orbit,
     });
   }
   return seats;
