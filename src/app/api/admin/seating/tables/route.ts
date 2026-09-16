@@ -106,9 +106,40 @@ export async function PATCH(request: Request) {
     }
 
     if (typeof update.capacity === "number") {
-      await db.collection("seat_assignments").deleteMany({
+      const newCap = update.capacity as number;
+      const assignments = db.collection("seat_assignments");
+      const seated = await assignments
+        .find({ tableId: body.id })
+        .sort({ seatIndex: 1 })
+        .toArray();
+
+      const kept = seated.slice(0, newCap);
+      const removed = seated.slice(newCap);
+      if (removed.length > 0) {
+        await assignments.deleteMany({
+          _id: { $in: removed.map((doc) => doc._id) },
+        });
+      }
+
+      const now = new Date();
+      for (let i = 0; i < kept.length; i++) {
+        if (kept[i].seatIndex !== 1000 + i) {
+          await assignments.updateOne(
+            { _id: kept[i]._id },
+            { $set: { seatIndex: 1000 + i } },
+          );
+        }
+      }
+      for (let i = 0; i < kept.length; i++) {
+        await assignments.updateOne(
+          { _id: kept[i]._id },
+          { $set: { seatIndex: i, updatedAt: now } },
+        );
+      }
+
+      await assignments.deleteMany({
         tableId: body.id,
-        seatIndex: { $gte: update.capacity },
+        seatIndex: { $gte: newCap },
       });
     }
 
