@@ -235,6 +235,20 @@ export function WeddingSite() {
     return () => window.removeEventListener("wedding-admin-data-changed", onChange);
   }, [adminAuthenticated, loadAdminOverview]);
 
+  const busCounts = useMemo(() => {
+    let adults = 0;
+    let children = 0;
+    for (const row of adminOverview?.rsvps ?? []) {
+      if (!row.needsBus) continue;
+      adults += 1;
+      for (const companion of row.companions ?? []) {
+        if (companion.isChild) children += 1;
+        else adults += 1;
+      }
+    }
+    return { adults, children, total: adults + children };
+  }, [adminOverview?.rsvps]);
+
   const [nameLeft, nameRight] = weddingConfig.coupleLine
     .split("&")
     .map((s) => s.trim());
@@ -1327,6 +1341,25 @@ export function WeddingSite() {
 
                 <article className="w-full rounded-2xl bg-white p-5 shadow-sm shadow-[#2F3530]/10 sm:p-7">
                   <h3 className="font-serif text-2xl">Confirmaciones</h3>
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    {[
+                      { label: "Van en bus", value: busCounts.total },
+                      { label: "Adultos", value: busCounts.adults },
+                      { label: "Niños", value: busCounts.children },
+                    ].map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-xl border border-[#2F3530]/10 bg-[#FAFCF9] px-3 py-2.5 text-center"
+                      >
+                        <p className="font-serif text-xl tabular-nums text-[#2F3530]">
+                          {item.value}
+                        </p>
+                        <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
+                          {item.label}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                   <div className="mt-4 overflow-x-auto">
                     <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
                       <thead className="text-[#8A9B82]">
