@@ -14,8 +14,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  FLOOR_HEIGHT,
-  FLOOR_WIDTH,
+  floorSize,
   seatPositions,
   tableGeometry,
   type GuestPerson,
@@ -155,6 +154,8 @@ export function AdminSeating() {
     }
     return map;
   }, [data?.tables]);
+
+  const floor = useMemo(() => floorSize(data?.tables ?? []), [data?.tables]);
 
   const filteredUnassigned = useMemo(() => {
     const q = guestSearch.trim().toLowerCase();
@@ -410,8 +411,8 @@ export function AdminSeating() {
   function onTablePointerMove(e: React.PointerEvent, table: SeatingTable) {
     if (draggingTableId !== table.id) return;
     const p = svgPoint(e.clientX, e.clientY);
-    const nx = Math.max(50, Math.min(FLOOR_WIDTH - 50, p.x - dragOffset.current.x));
-    const ny = Math.max(50, Math.min(FLOOR_HEIGHT - 50, p.y - dragOffset.current.y));
+    const nx = Math.max(50, Math.min(floor.width - 50, p.x - dragOffset.current.x));
+    const ny = Math.max(50, Math.min(floor.height - 50, p.y - dragOffset.current.y));
     setData((prev) => {
       if (!prev) return prev;
       return {
@@ -523,6 +524,7 @@ export function AdminSeating() {
           data={data}
           loading={loading}
           svgRef={svgRef}
+          floor={floor}
           assignmentBySeat={assignmentBySeat}
           selectedGuestKey={selectedGuestKey}
           selectedTableId={selectedTableId}
@@ -614,6 +616,7 @@ type PlanProps = {
   data: SeatingData | null;
   loading: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
+  floor: { width: number; height: number };
   assignmentBySeat: Map<string, SeatAssignment>;
   selectedGuestKey: string | null;
   selectedTableId: string | null;
@@ -637,6 +640,7 @@ function SeatingPlanView(props: PlanProps) {
     data,
     loading,
     svgRef,
+    floor,
     assignmentBySeat,
     selectedGuestKey,
     selectedTableId,
@@ -659,7 +663,7 @@ function SeatingPlanView(props: PlanProps) {
 
   return (
     <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_280px]">
-      <div className="min-w-0 overflow-x-auto rounded-xl border border-[#2F3530]/12 bg-[#F4F6F2]">
+      <div className="min-w-0 overflow-auto rounded-xl border border-[#2F3530]/12 bg-[#F4F6F2] max-h-[70vh]">
         {loading ? (
           <p className="p-8 text-center text-sm text-[#2F3530]/55">Cargando plano…</p>
         ) : tables.length === 0 ? (
@@ -670,19 +674,25 @@ function SeatingPlanView(props: PlanProps) {
             </p>
           </div>
         ) : (
+          <>
+          {floor.height > 700 ? (
+            <p className="sticky top-0 z-10 bg-[#F4F6F2]/95 px-4 py-2 text-center text-xs text-[#2F3530]/60">
+              Hay mesas más abajo: desplázate por el plano para verlas todas.
+            </p>
+          ) : null}
           <svg
             ref={svgRef}
-            viewBox={`0 0 ${FLOOR_WIDTH} ${FLOOR_HEIGHT}`}
+            viewBox={`0 0 ${floor.width} ${floor.height}`}
             className="h-auto w-full min-w-[640px] touch-none select-none"
             role="img"
             aria-label="Plano del salón con mesas y sillas"
           >
-            <rect width={FLOOR_WIDTH} height={FLOOR_HEIGHT} fill="#F4F6F2" />
+            <rect width={floor.width} height={floor.height} fill="#F4F6F2" />
             <rect
               x={40}
               y={40}
-              width={FLOOR_WIDTH - 80}
-              height={FLOOR_HEIGHT - 80}
+              width={floor.width - 80}
+              height={floor.height - 80}
               rx={12}
               fill="#ECEEE9"
               stroke="#C8D0C4"
@@ -690,7 +700,7 @@ function SeatingPlanView(props: PlanProps) {
               strokeDasharray="6 4"
             />
             <text
-              x={FLOOR_WIDTH / 2}
+              x={floor.width / 2}
               y={28}
               textAnchor="middle"
               className="fill-[#8A9B82] text-[11px] font-semibold uppercase tracking-[0.2em]"
@@ -818,6 +828,7 @@ function SeatingPlanView(props: PlanProps) {
               );
             })}
           </svg>
+          </>
         )}
       </div>
 

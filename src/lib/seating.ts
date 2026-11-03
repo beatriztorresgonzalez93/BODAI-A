@@ -232,12 +232,36 @@ export function seatPositions(
 export const FLOOR_WIDTH = 960;
 export const FLOOR_HEIGHT = 640;
 
+export function tableExtent(table: Pick<SeatingTable, "x" | "y" | "capacity" | "shape">) {
+  const g = tableGeometry(table.capacity, table.shape);
+  const pad = g.seatRadius + 6;
+  const rw = table.shape === "rect" ? g.orbitW : g.orbit;
+  const rh = table.shape === "rect" ? g.orbitH : g.orbit;
+  return {
+    minX: table.x - rw - pad,
+    maxX: table.x + rw + pad,
+    minY: table.y - rh - pad,
+    maxY: table.y + rh + pad,
+  };
+}
+
+export function floorSize(tables: Pick<SeatingTable, "x" | "y" | "capacity" | "shape">[]) {
+  let maxX = FLOOR_WIDTH;
+  let maxY = FLOOR_HEIGHT;
+  for (const table of tables) {
+    const extent = tableExtent(table);
+    maxX = Math.max(maxX, extent.maxX + 48);
+    maxY = Math.max(maxY, extent.maxY + 48);
+  }
+  return { width: Math.ceil(maxX), height: Math.ceil(maxY) };
+}
+
 export function defaultTablePosition(index: number) {
-  const cols = 4;
+  const cols = 6;
   const col = index % cols;
   const row = Math.floor(index / cols);
   return {
-    x: 120 + col * 210,
-    y: 100 + row * 180,
+    x: 110 + col * 155,
+    y: 110 + row * 175,
   };
 }
