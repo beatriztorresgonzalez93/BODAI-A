@@ -235,18 +235,32 @@ export function WeddingSite() {
     return () => window.removeEventListener("wedding-admin-data-changed", onChange);
   }, [adminAuthenticated, loadAdminOverview]);
 
-  const busCounts = useMemo(() => {
+  const guestCounts = useMemo(() => {
     let adults = 0;
     let children = 0;
+    let busAdults = 0;
+    let busChildren = 0;
     for (const row of adminOverview?.rsvps ?? []) {
-      if (!row.needsBus) continue;
       adults += 1;
+      if (row.needsBus) busAdults += 1;
       for (const companion of row.companions ?? []) {
-        if (companion.isChild) children += 1;
-        else adults += 1;
+        if (companion.isChild) {
+          children += 1;
+          if (row.needsBus) busChildren += 1;
+        } else {
+          adults += 1;
+          if (row.needsBus) busAdults += 1;
+        }
       }
     }
-    return { adults, children, total: adults + children };
+    return {
+      adults,
+      children,
+      total: adults + children,
+      busAdults,
+      busChildren,
+      busTotal: busAdults + busChildren,
+    };
   }, [adminOverview?.rsvps]);
 
   const [nameLeft, nameRight] = weddingConfig.coupleLine
@@ -1341,24 +1355,55 @@ export function WeddingSite() {
 
                 <article className="w-full rounded-2xl bg-white p-5 shadow-sm shadow-[#2F3530]/10 sm:p-7">
                   <h3 className="font-serif text-2xl">Confirmaciones</h3>
-                  <div className="mt-4 grid grid-cols-3 gap-2">
-                    {[
-                      { label: "Van en bus", value: busCounts.total },
-                      { label: "Adultos", value: busCounts.adults },
-                      { label: "Niños", value: busCounts.children },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="rounded-xl border border-[#2F3530]/10 bg-[#FAFCF9] px-3 py-2.5 text-center"
-                      >
-                        <p className="font-serif text-xl tabular-nums text-[#2F3530]">
-                          {item.value}
-                        </p>
-                        <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
-                          {item.label}
-                        </p>
+                  <div className="mt-4 space-y-3">
+                    <div>
+                      <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8A9B82]">
+                        Confirmados
+                      </p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { label: "Total", value: guestCounts.total },
+                          { label: "Adultos", value: guestCounts.adults },
+                          { label: "Niños", value: guestCounts.children },
+                        ].map((item) => (
+                          <div
+                            key={`conf-${item.label}`}
+                            className="rounded-xl border border-[#2F3530]/10 bg-[#FAFCF9] px-3 py-2.5 text-center"
+                          >
+                            <p className="font-serif text-xl tabular-nums text-[#2F3530]">
+                              {item.value}
+                            </p>
+                            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
+                              {item.label}
+                            </p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    <div>
+                      <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8A9B82]">
+                        Van en autobús
+                      </p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { label: "Total", value: guestCounts.busTotal },
+                          { label: "Adultos", value: guestCounts.busAdults },
+                          { label: "Niños", value: guestCounts.busChildren },
+                        ].map((item) => (
+                          <div
+                            key={`bus-${item.label}`}
+                            className="rounded-xl border border-[#2F3530]/10 bg-[#FAFCF9] px-3 py-2.5 text-center"
+                          >
+                            <p className="font-serif text-xl tabular-nums text-[#2F3530]">
+                              {item.value}
+                            </p>
+                            <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9B82]">
+                              {item.label}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <div className="mt-4 overflow-x-auto">
                     <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
